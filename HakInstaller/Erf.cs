@@ -1272,10 +1272,16 @@ namespace NWN.FileTypes
 					if (ResType.Invalid == this.ResType) return string.Empty;
 					if (0 == ResRef.Length) return string.Empty;
 
+					// Convert the restype to a string to get the extension,
+					// if it is an unknown extension then arbitrarily use
+					// "ResUNK" to get "UNK" as the extension.
+					string restype = this.ResType.ToString();
+					if (restype.Length < 6) restype = "ResUNK";
+
 					System.Text.StringBuilder b = new System.Text.StringBuilder(32);
 					b.Append(ResRef);
 					b.Append(".");
-					b.Append(this.ResType.ToString(), 3, 3);
+					b.Append(restype, 3, 3);
 					return b.ToString();
 				}
 			}

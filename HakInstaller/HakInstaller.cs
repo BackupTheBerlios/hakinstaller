@@ -1439,6 +1439,11 @@ namespace HakInstaller
 				// Save the changes to the module info file.
 				moduleInfo.Save();
 
+				// Backup the old module file before saving.
+				string backupName = Path.Combine(NWNInfo.GetPathForFile(moduleFile), 
+					Path.GetFileNameWithoutExtension(moduleFile) + ".BackupMod");
+				File.Copy(NWNInfo.GetFullFilePath(moduleFile), backupName, true);
+
 				// Recreate the module file with our changed files.
 				Progress(progress, true, "Saving {0}", moduleFile);
 				module.RecreateFile();
