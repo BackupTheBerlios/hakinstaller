@@ -37,7 +37,14 @@ namespace HakInstaller
 		/// <param name="labelPath">The path string</param>
 		protected void SetLabels(Label labelVersion, Label labelPath)
 		{
-			labelVersion.Text = StringResources.GetString("VersionFormat", NWNInfo.Version);
+			// Load strings for XP1 and XP2 installed if they are otherwise use
+			// nothing.
+			string xp1 = NWNInfo.IsXP1Installed ? 
+				StringResources.GetString("VersionFormatXP1") : string.Empty;
+			string xp2 = NWNInfo.IsXP1Installed ? 
+				StringResources.GetString("VersionFormatXP2") : string.Empty;
+
+			labelVersion.Text = StringResources.GetString("VersionFormat", NWNInfo.Version, xp1, xp2);
 			labelPath.Text = StringResources.GetString("PathFormat", NWNInfo.InstallPath);
 		}
 
@@ -92,11 +99,11 @@ namespace HakInstaller
 			checkedModules.Sorted = false;
 
 			// Add the OC/XP1/XP2 modules if appropriate.
-			if (NWNInfo.IsXP2Installed)
+			if (NWNInfo.IsXP2ModsInstalled)
 				checkedModules.Items.Insert(0, new Module(StringResources.GetString("XP2Name"), NWNInfo.XP2Modules));
-			if (NWNInfo.IsXP1Installed)
+			if (NWNInfo.IsXP1ModsInstalled)
 				checkedModules.Items.Insert(0, new Module(StringResources.GetString("XP1Name"), NWNInfo.XP1Modules));
-			if (NWNInfo.IsOCInstalled) 
+			if (NWNInfo.IsOCModsInstalled) 
 				checkedModules.Items.Insert(0, new Module(StringResources.GetString("OCName"), NWNInfo.OCModules));
 		}
 

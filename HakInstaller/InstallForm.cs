@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using HakInstaller.Utilities;
@@ -27,6 +28,12 @@ namespace HakInstaller
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+
+			// Add the major/minor version number to the caption, full version
+			// number is available in the about box.
+			Version version = Assembly.GetExecutingAssembly().GetName().Version;
+			string versionText = string.Format("{0}.{1}", version.Major, version.Minor);
+			Text = string.Format(Text, versionText);
 
 			SetLabels(labelVersion, labelPath);
 		}
@@ -180,7 +187,7 @@ namespace HakInstaller
 			this.Name = "InstallForm";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "NWN Content Installer 2.0 Beta 1";
+			this.Text = "NWN Content Installer {0}";
 			this.Load += new System.EventHandler(this.InstallForm_Load);
 			this.ResumeLayout(false);
 

@@ -33,7 +33,8 @@ namespace HakInstaller
 			string name = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
 			this.Text += name;
 
-			labelCaption.Text = StringResources.GetString("HakInstallAbout");
+			string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			labelCaption.Text = string.Format(labelCaption.Text, version);
 
 			Icon icon = new Icon(typeof(AboutForm), "HakInstaller.ico");
 			icon = new Icon(icon, 32, 32);
@@ -72,14 +73,15 @@ namespace HakInstaller
 			// 
 			this.labelCaption.Location = new System.Drawing.Point(96, 16);
 			this.labelCaption.Name = "labelCaption";
-			this.labelCaption.Size = new System.Drawing.Size(240, 16);
+			this.labelCaption.Size = new System.Drawing.Size(256, 32);
 			this.labelCaption.TabIndex = 0;
+			this.labelCaption.Text = "HakInstaller {0} - Installs custom content in NWN modules";
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(96, 48);
+			this.label2.Location = new System.Drawing.Point(96, 56);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(248, 16);
+			this.label2.Size = new System.Drawing.Size(256, 16);
 			this.label2.TabIndex = 0;
 			this.label2.Text = "(C) 2004 Bleedingedge (Mark Sironi)";
 			// 
@@ -89,7 +91,7 @@ namespace HakInstaller
 			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.button1.Location = new System.Drawing.Point(16, 88);
 			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(72, 32);
+			this.button1.Size = new System.Drawing.Size(72, 24);
 			this.button1.TabIndex = 5;
 			this.button1.Text = "&OK";
 			this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -107,13 +109,12 @@ namespace HakInstaller
 			// 
 			this.AcceptButton = this.button1;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(360, 134);
+			this.ClientSize = new System.Drawing.Size(360, 128);
 			this.ControlBox = false;
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																		  this.pictureBox,
-																		  this.button1,
-																		  this.labelCaption,
-																		  this.label2});
+			this.Controls.Add(this.pictureBox);
+			this.Controls.Add(this.button1);
+			this.Controls.Add(this.labelCaption);
+			this.Controls.Add(this.label2);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Name = "AboutForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

@@ -40,7 +40,7 @@
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=1.0.3102.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
 	<data name="VersionFormat">
-		<value>NWN version {0} installed.</value>
+		<value>NWN{1}{2} version {0} installed.</value>
 	</data>
 	<data name="PathFormat">
 		<value>Install Path: {0}</value>
@@ -72,12 +72,6 @@
 	<data name="ModuleOverwritesHifs">
 		<value>Some content being added will be ignored because it is contained in haks already in the module.  The module may not play correctly, do you wish to continue?</value>
 	</data>
-	<data name="HakInstallAbout">
-		<value>HakInstaller - Install custom content in NWN modules</value>
-	</data>
-	<data name="PRCInstallAbout">
-		<value>PRCInstaller- Install the PRC pack in NWN modules</value>
-	</data>
 	<data name="ValidateNWNVersionError">
 		<value>The {0} custom content cannot be installed because it requires at least version {1} of NWN, and you are currently running version {2}.</value>
 	</data>
@@ -94,6 +88,12 @@
 		<value>The {0} custom content cannot be installed because it requires the Hordes of the Underdark expansion.</value>
 	</data>
 	<data name="SingleHIFTitle">
-		<value>{0} Module Updater {1}</value>
+		<value>{0} {1} Module Updater</value>
+	</data>
+	<data name="VersionFormatXP1">
+		<value>, SoU</value>
+	</data>
+	<data name="VersionFormatXP2">
+		<value>, HotU</value>
 	</data>
 </root>

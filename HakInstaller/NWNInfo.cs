@@ -16,9 +16,19 @@ namespace NWN
 		public static bool IsInstalled { get { return singleton.installed; } }
 
 		/// <summary>
+		/// Returns true if XP1 is installed.
+		/// </summary>
+		public static bool IsXP1Installed { get { return singleton.isXP1Installed; } }
+
+		/// <summary>
+		/// Returns true if XP2 is installed.
+		/// </summary>
+		public static bool IsXP2Installed { get { return singleton.isXP2Installed; } }
+	
+		/// <summary>
 		/// Returns true if the OC modules are installed.
 		/// </summary>
-		public static bool IsOCInstalled
+		public static bool IsOCModsInstalled
 		{
 			get
 			{
@@ -35,7 +45,7 @@ namespace NWN
 		/// <summary>
 		/// Returns true if the XP1 modules are installed.
 		/// </summary>
-		public static bool IsXP1Installed
+		public static bool IsXP1ModsInstalled
 		{
 			get
 			{
@@ -49,7 +59,10 @@ namespace NWN
 			}
 		}
 
-		public static bool IsXP2Installed
+		/// <summary>
+		/// Returns true if the XP2 modules are installed.
+		/// </summary>
+		public static bool IsXP2ModsInstalled
 		{
 			get
 			{
@@ -217,6 +230,16 @@ namespace NWN
 				installPath = key.GetValue(regLocation) as string;
 				version = key.GetValue(regVersion) as string;
 			}
+
+			// Check for the XP1 Guid registry entry, if it's there then
+			// mark XP1 as being installed.
+			key = Registry.LocalMachine.OpenSubKey(regXP1Path);
+			if (null != key && null != key.GetValue(regGuid)) isXP1Installed = true;
+
+			// Check for the XP2 Guid registry entry, if it's there then
+			// mark XP2 as being installed.
+			key = Registry.LocalMachine.OpenSubKey(regXP2Path);
+			if (null != key && null != key.GetValue(regGuid)) isXP2Installed = true;
 		}
 
 		// Module lists for the various modules in the OC/XP1/XP2
@@ -228,6 +251,9 @@ namespace NWN
 			{ "XP2_Chapter1.nwm", "XP2_Chapter2.nwm", "XP2_Chapter3.nwm" };
 
 		private const string regPath = @"SOFTWARE\BioWare\NWN\Neverwinter";
+		private const string regXP1Path = @"SOFTWARE\BioWare\NWN\Undrentide";
+		private const string regXP2Path = @"SOFTWARE\BioWare\NWN\Underdark";
+		private const string regGuid = "Guid";
 		private const string regLocation = "Location";
 		private const string regVersion = "Version";
 
@@ -237,6 +263,8 @@ namespace NWN
 		private string overridePath = string.Empty;
 		private string version = string.Empty;
 		private bool installed = false;
+		private bool isXP1Installed = false;
+		private bool isXP2Installed = false;
 		#endregion
 	}
 }
