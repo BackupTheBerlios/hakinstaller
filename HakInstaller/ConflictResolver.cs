@@ -41,6 +41,7 @@ namespace HakInstaller
 			this.progress = progress;
 			conflictHak = string.Empty;
 			conflictHakDir = string.Empty;
+			conflictHakMessageShown = false;
 		}
 
 		/// <summary>
@@ -150,10 +151,9 @@ namespace HakInstaller
 		{
 			try
 			{
-				// Let the user know we are building a merge tlk.
-				progress.SetMessage("Building merge hak for module\n'{0}'.", 
-					Path.GetFileNameWithoutExtension(module.FileName));
-                
+				// Reset the message shown flag so we show the message once.
+				conflictHakMessageShown = false;
+
 				// Generate the name of the conflict resolution hak and the directory
 				// in which to place the files that will be added to the hak.
 				conflictHak = GetFileName(module, "hak");
@@ -168,6 +168,7 @@ namespace HakInstaller
 					switch (Path.GetExtension(conflict.File).ToLower())
 					{
 						case ".2da":
+							DisplayConflictHakMessage(module);
 							if (Resolve2daConflict(hakInfos, module, moduleInfo, conflict))
 								conflicts.Remove(conflict);
 							break;
@@ -176,6 +177,7 @@ namespace HakInstaller
 
 				// Get all of the files in the conflict hak directory, if there are none
 				// then there is no conflict hak.
+				if (!Directory.Exists(conflictHakDir)) return string.Empty;
 				string[] files = Directory.GetFiles(conflictHakDir);
 				if (0 == files.Length) return string.Empty;
 
@@ -188,16 +190,30 @@ namespace HakInstaller
 			}
 			finally
 			{
-				if (Directory.Exists(conflictHakDir)) Directory.Delete(conflictHakDir, true);
-				conflictHakDir = string.Empty;
+				if (Directory.Exists(conflictHakDir)) Directory.Delete(conflictHakDir);
 			}
 		}
 		#endregion
 
 		#region private fields/properties/methods
+		private bool conflictHakMessageShown;
 		private IHakInstallProgress progress;
 		private string conflictHak;
 		private string conflictHakDir;
+
+		/// <summary>
+		/// Displays the building merge hak message once.
+		/// </summary>
+		/// <param name="module">The module that we are resolving conflicts for</param>
+		private void DisplayConflictHakMessage(Erf module)
+		{
+			if (conflictHakMessageShown) return;
+
+			// Let the user know we are building a merge tlk.
+			progress.SetMessage("Building merge hak for module\n'{0}'.", 
+				Path.GetFileNameWithoutExtension(module.FileName));
+			conflictHakMessageShown = true;
+		}
 
 		/// <summary>
 		/// Generates a name for a conflict resolution file (hak or tlk).  It generates

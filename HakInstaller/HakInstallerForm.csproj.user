@@ -11,7 +11,7 @@
                     RemoteDebugEnabled = "false"
                     RemoteDebugMachine = ""
                     StartAction = "Project"
-                    StartArguments = '"PRC Pack.hif"'
+                    StartArguments = ""
                     StartPage = ""
                     StartProgram = ""
                     StartURL = ""
