@@ -715,7 +715,7 @@ namespace HakInstaller
 		}
 
 		/// <summary>
-		/// Property handler for the module's hak property.  It adda all of the haks
+		/// Property handler for the module's hak property.  It adds all of the haks
 		/// to the module.
 		/// </summary>
 		/// <param name="module">The module being modified</param>
@@ -733,6 +733,27 @@ namespace HakInstaller
 			for (int i = 0; i < haks.Length; i++)
 				haks[i] = Path.GetFileNameWithoutExtension(values[i].ToLower());
 			moduleInfo.AddHaks(haks);
+		}
+
+		/// <summary>
+		/// Property handler for the module's hak property.  It adds all of the haks
+		/// to the module.
+		/// </summary>
+		/// <param name="module">The module being modified</param>
+		/// <param name="source">The source object, a ModuleInfo object in this case</param>
+		/// <param name="property">The property to set</param>
+		/// <param name="values">The collection containing the property values</param>
+		[PropertyHandler("Module", "Areas")]
+		private void Module_Areas(Erf module, object source, string property,
+			StringCollection values)
+		{
+			ModuleInfo moduleInfo = (ModuleInfo) source;
+
+			// Copy the haks to a flat array and add them to the module.
+			string[] areas = new string[values.Count];
+			for (int i = 0; i < areas.Length; i++)
+				areas[i] = values[i].ToLower();
+			moduleInfo.AddAreas(areas);
 		}
 		#endregion
 

@@ -224,6 +224,10 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "readme.txt"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "ReplacingFilesForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"

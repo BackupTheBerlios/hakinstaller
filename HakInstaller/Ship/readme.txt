@@ -72,6 +72,9 @@ path of NWN.
 VERSION HISTORY
 ===============
 
+1.4 - Added support for adding areas to modules in the HIF.  Added support
+for BMU music files in erfs/haks/modules.
+
 1.32 Fixed duplicate key bug.
 
 1.31 Fixed a bug that caused the window to not come up centered.  Changed

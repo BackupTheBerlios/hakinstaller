@@ -21,6 +21,7 @@ namespace NWN.FileTypes.Tools
 		ResWAV = 4,
 		ResPLT = 6,
 		ResINI = 7,
+		ResBMU = 8,
 		ResTXT = 10,
 		ResMDL = 2002,
 		ResNSS = 2009,

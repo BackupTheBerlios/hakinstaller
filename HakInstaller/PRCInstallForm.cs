@@ -153,7 +153,7 @@ namespace HakInstaller
 			this.Name = "PRCInstallForm";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "PRC Pack Installer 1.32";
+			this.Text = "PRC Pack Installer 1.4";
 			this.SizeChanged += new System.EventHandler(this.InstallForm_SizeChanged);
 			this.Load += new System.EventHandler(this.InstallForm_Load);
 			this.ResumeLayout(false);
