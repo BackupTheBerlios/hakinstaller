@@ -650,6 +650,7 @@ namespace NWN.FileTypes
 			keyHash = new Hashtable(5000);
 			addedFileHash = new Hashtable(1000);
 			replacedFileHash = new Hashtable(1000);
+			decompressedPath = string.Empty;
 		}
 
 		/// <summary>
@@ -723,8 +724,8 @@ namespace NWN.FileTypes
 		/// <param name="fileName">The name of the file.</param>
 		public void SaveAs(string fileName)
 		{
-			// The ERF must be decompressed first.
-			if (string.Empty == decompressedPath)
+			// The ERF must be decompressed first unless it is a new ERF.
+			if (keys.Length > 0 && string.Empty == decompressedPath)
 				throw new NWNException("ERF must be decompressed to recreate");
 
 			// Copy all of the modified files into the temp directory

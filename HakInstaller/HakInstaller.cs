@@ -180,6 +180,27 @@ namespace HakInstaller
 		{
 			InnerList.Add(conflict);
 		}
+
+		/// <summary>
+		/// Generates a copy of the FileConflictCollection
+		/// </summary>
+		/// <returns></returns>
+		public FileConflictCollection Clone()
+		{
+			FileConflictCollection copy = new FileConflictCollection();
+			foreach (object o in InnerList)
+				copy.InnerList.Add(o);
+			return copy;
+		}
+
+		/// <summary>
+		/// Removes a conflict from the collection.
+		/// </summary>
+		/// <param name="conflict">The conflict to remove</param>
+		public void Remove(FileConflict conflict)
+		{
+			InnerList.Remove(conflict);
+		}
 		#endregion
 	}
 
@@ -262,6 +283,27 @@ namespace HakInstaller
 		public void Add(OverwriteWarning warning)
 		{
 			InnerList.Add(warning);
+		}
+
+		/// <summary>
+		/// Makes a clone of the collection
+		/// </summary>
+		/// <returns>The clone</returns>
+		public OverwriteWarningCollection Clone()
+		{
+			OverwriteWarningCollection copy = new OverwriteWarningCollection();
+			foreach (object o in InnerList)
+				copy.InnerList.Add(o);
+			return copy;
+		}
+
+		/// <summary>
+		/// Removes an overwrite warning from the collection
+		/// </summary>
+		/// <param name="warning">The warning to remove</param>
+		public void Remove(OverwriteWarning warning)
+		{
+			InnerList.Remove(warning);
 		}
 		#endregion
 	}
@@ -1142,7 +1184,9 @@ namespace HakInstaller
 				foreach (string file in files)
 					try
 					{
-						hifHakHash.Add(file.ToLower(), hakName.ToLower());
+						string key = file.ToLower();
+						string hakNameLower = hakName.ToLower();
+						hifHakHash.Add(key, hakNameLower);
 					}
 					catch (ArgumentException)
 					{}
@@ -1209,6 +1253,14 @@ namespace HakInstaller
 						erfWarnings.Add(new OverwriteWarning(key, source, 
 							Path.GetFileName(erf.FileName.ToLower())));
 				}
+			}
+
+			// We have built the list of conflicts, before asking the user try to resolve the
+			// conflicts as we may be able to generate a merge hak to resolve some of them.
+			if (hakWarnings.Count > 0)
+			{
+				ConflictResolver resolver = new ConflictResolver(progress);
+				mergeHak = resolver.ResolveConflicts(hakInfos, module, moduleInfo, hakWarnings);
 			}
 
 			// We have finished checking for files that are going to get overwritten.
@@ -1327,6 +1379,15 @@ namespace HakInstaller
 					}
 				}
 
+				// If we have a merge hak then add it now so it goes to the top of
+				// the hak list.
+				if (string.Empty != mergeHak)
+				{
+					StringCollection mergeHakCollection = new StringCollection();
+					mergeHakCollection.Add(mergeHak);
+					Module_Hak(module, moduleInfo, "hak", mergeHakCollection);
+				}
+
 				// Build string arrays of the hif names and versions of all of the HakInfo
 				// objects we added to the module, then update the module's installed
 				// HakInfo property.  This is a custom property used by this tool to
@@ -1362,14 +1423,19 @@ namespace HakInstaller
 					progress.DisplayMessage(string.Format(
 						"There were conflicts between the custom content you are trying to add and " +
 						"the files already used by the module '{0}'.  Merge files were created to resolve " +
-						"some of these conflicts, you should delete these files when you are finished " +
+						"these conflicts, you should delete these files when you are finished " +
 						"with your module." + files, Path.GetFileNameWithoutExtension(module.FileName)));
 				}
 			}
-			catch (InstallCancelledException)
+			catch (Exception e)
 			{
-				// We don't do anything with this but eat it, it just means that
-				// the cancel button was pressed.
+				// Delete any merge files we created, the install is failing.s
+				if (string.Empty != mergeTlk) File.Delete(NWN.NWNInfo.GetFullFilePath(mergeTlk));
+				if (string.Empty != mergeHak) File.Delete(NWN.NWNInfo.GetFullFilePath(mergeHak));
+
+				// If the exception isn't an InstallCancelledException then throw it.
+				// InstallCancelledExceptions are thrown to abort the install, we want to eat those.
+				if (!(e is InstallCancelledException)) throw;
 			}
 			finally
 			{

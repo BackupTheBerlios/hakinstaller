@@ -94,6 +94,11 @@
         <Files>
             <Include>
                 <File
+                    RelPath = "2da.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "AboutForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"

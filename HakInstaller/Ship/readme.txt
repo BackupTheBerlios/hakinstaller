@@ -107,6 +107,16 @@ for example if tlk1.tlk contains "foo" at entry 100 and "tlk2.tlk" contains
 that multiple tlk files may have "Bad Strref" at location 0, it will ignore
 all of the duplicates in this case.
 
+The tool supports 2da file merging between the module's haks (if any) and
+any 2da's contained in the HIF.  The tool will attempt to generate a merge
+hak (and place it at the top of the hak list) containing merged copies of
+all of the conflicting 2da's.  If for some reason any of the 2da's cannot
+be successfully merged the tool will still attempt to merge any other conflicting
+2da's.
+
+If a merge hak and/or tlk were generated it will tell the user so that they
+can delete the files when they are finished with the module.
+
 
 VERSION HISTORY
 ===============
@@ -121,8 +131,11 @@ Added the ability of HIFs to specify a minimum required version of NWN, the
 HIF will not install if the user's version of NWN is less than the required
 version.
 
-Added support for merging duplicate tlk files and creating a merge tlk file
+Added support for merging conflicting tlk files and creating a merge tlk file
 to be used by the module.
+
+Added support for merging conflicting 2da files across all HIFs and creating
+a merge hak containing merged versions of the 2da's.
 
 1.41 - Recompiled for .NET Framework 1.1.  Fixed a bug adding heartbeat
 events.
@@ -173,6 +186,13 @@ here and show what is happening.
 
 First, here is the contents of the hif file (minus the giant comment at the
 top describing the format of hif files):
+
+# Custom Content title and version number.
+Title : PRC Pack
+Version : 2.0
+
+# Specify that the user must have both expansions installed and 1.62
+MinNWNVersion : 1.62, XP1, XP2
 
 # Import there ERF files into the module.
 erf : prc_consortium.erf
