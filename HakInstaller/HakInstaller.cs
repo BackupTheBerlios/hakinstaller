@@ -540,13 +540,14 @@ namespace HakInstaller
 		/// <param name="modules">The list of modules</param>
 		/// <returns>A collection containing the list of conflicts, or null if there are no
 		/// conflicts</returns>
-		public static HifConflictCollection CheckInstalledHifs(string[] proposedHifs, string[] modules)
+		public static HifConflictCollection CheckInstalledHifs(HakInfo[] proposedHifs, string[] modules)
 		{
 			HifConflictCollection conflicts = null;
 			foreach (string module in modules)
 			{
 				// Load the module info data and create an object for it.
 				MemoryStream stream = Erf.GetFile(NWNInfo.GetFullFilePath(module), ModuleInfo.FileName);
+				if (null == stream) NWN.FileTypes.Tools.NWNLogger.Log(10, "HakInstaller.CheckInstalledHifs, Erf.GetFile() returned null!!!");
 				ModuleInfo info = new ModuleInfo(stream);
 
 				// Load the installed hifs in module if any.
@@ -558,8 +559,8 @@ namespace HakInstaller
 				// then check to see if there are any hif conflicts, if there are then
 				// add them to the conflict list.
 				StringCollection proposedHifsColl = new StringCollection();
-				foreach (string hif in proposedHifs)
-					proposedHifsColl.Add(Path.GetFileNameWithoutExtension(hif).ToLower());
+				foreach (HakInfo hif in proposedHifs)
+					proposedHifsColl.Add(Path.GetFileNameWithoutExtension(hif.Name).ToLower());
 				for (int i = 0; i < installedHifs.Length; i++)
 				{
 					if (proposedHifsColl.Contains(installedHifs[i].ToLower()))
@@ -584,7 +585,7 @@ namespace HakInstaller
 		/// <param name="modules">The list of modules to add the haks to</param>
 		/// <param name="progress">An interface used to an object used to display
 		/// progress information, or null if no progress information is desired</param>
-		public static void InstallHaks(string[] hifs, string[] modules,
+		public static void InstallHaks(HakInfo[] hifs, string[] modules,
 			IHakInstallProgress progress)
 		{
 			// If no progress was given then use a dummy one which does nothing.
@@ -601,7 +602,7 @@ namespace HakInstaller
 		/// <param name="moduleFile">The module to add the haks to</param>
 		/// <param name="progress">An interface used to an object used to display
 		/// progress information, or null if no progress information is desired</param>
-		public static void InstallHaks(string[] hifs, string moduleFile,
+		public static void InstallHaks(HakInfo[] hifs, string moduleFile,
 			IHakInstallProgress progress)
 		{
 			// If no progress was given then use a dummy one which does nothing.
@@ -839,7 +840,7 @@ namespace HakInstaller
 		/// <param name="hifs">The list of hifs</param>
 		/// <param name="modules">The list of modules</param>
 		/// <returns>The number of progress steps required.</returns>
-		private int GetProgressCount(string[] hifs, string[] modules)
+		private int GetProgressCount(HakInfo[] hifs, string[] modules)
 		{
 			// Count the number of erfs and files in the erfs.
 			int fileCount, erfCount;
@@ -870,17 +871,16 @@ namespace HakInstaller
 		/// <param name="hifs">The list of hifs</param>
 		/// <param name="fileCount">Returns the number of files in the erfs.</param>
 		/// <param name="erfCount">Returns the number of erf files.</param>
-		private void CountAddedFiles(string[] hifs, out int fileCount, out int erfCount)
+		private void CountAddedFiles(HakInfo[] hifs, out int fileCount, out int erfCount)
 		{
 			fileCount = 0;
 			erfCount = 0;
 
 			// Now loop through all of the haks and add them to the module.
-			foreach (string hif in hifs)
+			foreach (HakInfo hif in hifs)
 			{
-				HakInfo hakInfo = new HakInfo(Path.Combine(NWNInfo.HakInfoPath, hif));
-				erfCount += hakInfo.Erfs.Count;
-				foreach (string erf in hakInfo.Erfs)
+				erfCount += hif.Erfs.Count;
+				foreach (string erf in hif.Erfs)
 					fileCount += Erf.GetFileCount(Path.Combine(NWNInfo.GetPathForFile(erf), erf));
 			}
 		}
@@ -1254,7 +1254,7 @@ namespace HakInstaller
 		/// <param name="modules">The list of modules to add the haks to</param>
 		/// <param name="progress">An interface used to an object used to display
 		/// progress information, or null if no progress information is desired</param>
-		private void DoInstall(string[] hifs, string[] modules,
+		private void DoInstall(HakInfo[] hifs, string[] modules,
 			IHakInstallProgress progress)
 		{
 			StringCollection tempDirs = null;
@@ -1266,12 +1266,11 @@ namespace HakInstaller
 				progress.ProgressSteps = GetProgressCount(hifs, modules);
 
 				// Load the hif files and decompress them to temp directories.
-				HakInfo[] hakInfos = LoadHifs(hifs, progress);
-				tempDirs = DecompressHifErfs(hakInfos, progress);
+				tempDirs = DecompressHifErfs(hifs, progress);
 
 				// Now apply the hifs to each module in turn.
 				foreach (string module in modules)
-					DoInstall(hakInfos, tempDirs, module, progress);
+					DoInstall(hifs, tempDirs, module, progress);
 			}
 			finally
 			{

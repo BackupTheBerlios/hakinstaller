@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
+using HakInstaller.Utilities;
 
 namespace HakInstaller
 {
@@ -57,22 +59,135 @@ namespace HakInstaller
 		{ get { return Path.GetFileNameWithoutExtension(fileInfo.Name); } }
 
 		/// <summary>
+		/// Gets the title of the HIF.  This is the HIF's title property if
+		/// it has one, or it's file name if it doesn't.
+		/// </summary>
+		public string Title
+		{
+			get
+			{
+				StringCollection title = GetStrings(TitleKey, string.Empty);
+				return null == title || 0 == title.Count || string.Empty == title[0] ?
+					Name : title[0];
+			}
+		}
+
+		/// <summary>
 		/// Gets the version number of the HIF.
 		/// </summary>
 		public float Version
 		{
 			get
 			{
-				StringCollection version = GetStrings(VersionKey, string.Empty);
-				return (float) Convert.ToDouble(version[0]);
+				try
+				{
+					StringCollection version = GetStrings(VersionKey, string.Empty);
+					return (float) Convert.ToDouble(version[0], cultureUSA);
+				}
+				catch (Exception)
+				{
+					return 0;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the version of the HIF as a text string.
+		/// </summary>
+		public string VersionText
+		{
+			get
+			{
+				try
+				{
+					return GetStrings(VersionKey, string.Empty)[0];
+				}
+				catch (Exception)
+				{
+					return string.Empty;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the minimum version number of NWN required to install the HIF.
+		/// </summary>
+		public float RequiredNWNVersion
+		{
+			get
+			{
+				try
+				{
+					// Get the required string array and look for a string that starts with a 
+					// digit, that would be the NWN version, return it if we find it.
+					StringCollection required = GetStrings(RequiredNWNVersionKey, string.Empty);
+					foreach (string s in required)
+					{
+						if (Char.IsDigit(s[0])) return (float) Convert.ToDouble(required[0], cultureUSA);
+					}
+					return 0;
+				}
+				catch (Exception)
+				{
+					return 0;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns true if XP1 is required.
+		/// </summary>
+		public bool IsXP1Required
+		{
+			get
+			{
+				try
+				{
+					// Get the required string array and look for "XP1" or "Undrentide".
+					StringCollection required = GetStrings(RequiredNWNVersionKey, string.Empty);
+					foreach (string s in required)
+					{
+						if (0 == string.Compare("XP1", s, true) ||
+							0 == string.Compare("Undrentide", s, true))
+							return true;
+					}
+				}
+				catch (Exception)
+				{}
+
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Returns true if XP2 is required.
+		/// </summary>
+		public bool IsXP2Required
+		{
+			get
+			{
+				try
+				{
+					// Get the required string array and look for "XP1" or "Undrentide".
+					StringCollection required = GetStrings(RequiredNWNVersionKey, string.Empty);
+					foreach (string s in required)
+					{
+						if (0 == string.Compare("XP2", s, true) ||
+							0 == string.Compare("Underdark", s, true))
+							return true;
+					}
+				}
+				catch (Exception)
+				{}
+
+				return false;
 			}
 		}
 
 		/// <summary>
 		/// Gets the list of ERF files to add to the collection.
 		/// </summary>
-		public StringCollection Erfs 
-		{ get { return components[ErfKey] as StringCollection; } }
+		public StringCollection Erfs  { get { return components[ErfKey] as StringCollection; } }
 
 		/// <summary>
 		/// Gets the dictionary of module properties that must be added/modified.
@@ -137,6 +252,85 @@ namespace HakInstaller
 			StringCollection version = GetStrings(VersionKey, string.Empty);
 			if (0 == version.Count) version.Add("0");
 		}
+
+		/// <summary>
+		/// Validates the HIF to make sure that it can be installed, returning an error
+		/// message if it cannot.
+		/// </summary>
+		/// <param name="error">The error message if the HIF cannot be installed, or 
+		/// string.Empty if the HIF can be installed</param>
+		/// <returns>True if the HIF can be installed, false if it cannot.</returns>
+		public bool Validate(out string error)
+		{
+			error = string.Empty;
+
+			// If the HIF has a minimum required version and the current NWN install isn't
+			// high enough then error out right away.
+			if (RequiredNWNVersion > 0 && 
+				(float) Convert.ToDouble(NWN.NWNInfo.Version, cultureUSA) < RequiredNWNVersion)
+			{
+				error = StringResources.GetString("ValidateNWNVersionError",
+					Title, RequiredNWNVersion, NWN.NWNInfo.Version);
+				return false;
+			}
+
+			// If the content requires XP1 then validate it.
+			if (IsXP1Required && !NWN.NWNInfo.IsXP1Installed)
+			{
+				error = StringResources.GetString("ValidateNWNXP1Error", Title);
+				return false;
+			}
+
+			// If the content requies XP2 then validate it.
+			if (IsXP2Required && !NWN.NWNInfo.IsXP2Installed)
+			{
+				error = StringResources.GetString("ValidateNWNXP2Error", Title);
+				return false;
+			}
+
+			// Build a list of ALL of the files referenced by the HIF.
+			StringCollection files = new StringCollection();
+			StringCollection strings = this.GetStrings(ErfKey, string.Empty);
+			foreach (string s in strings) files.Add(NWN.NWNInfo.GetFullFilePath(s));
+			strings = GetStrings(ModuleKey, "hak");
+			foreach (string s in strings) files.Add(NWN.NWNInfo.GetFullFilePath(s));
+			strings = GetStrings(ModuleKey, "tlk");
+			foreach (string s in strings) files.Add(NWN.NWNInfo.GetFullFilePath(s));
+
+			// Loop through all of the files checking to see which, if any, are missing.
+			string missingFiles = string.Empty;
+			foreach (string file in files)
+			{
+				// If the file is missing add it to our missing files string.
+				if (!File.Exists(file))
+				{
+					if (0 == missingFiles.Length) missingFiles += "\r\n";
+					missingFiles += "\r\n\t";
+					missingFiles += NWN.NWNInfo.GetPartialFilePath(Path.GetFileName(file));
+				}
+			}
+
+			// If there are missing files then format the error message and return it.
+			if (missingFiles.Length > 0)
+				error = StringResources.GetString("ValidateMissingFilesError", Title, missingFiles);
+
+			return 0 == error.Length;
+		}
+
+		/// <summary>
+		/// Override of ToString() to return the name of the HIF.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			return Name;
+		}
+
+		#endregion
+
+		#region private static fields/properties/methods
+		// Create a CultureInfo for US English to do proper number conversion.
+		private static CultureInfo cultureUSA = new CultureInfo(0x0409);
 		#endregion
 
 		#region private fields/properties/methods
@@ -213,6 +407,8 @@ namespace HakInstaller
 		private const string ErfKey = "erf";
 		private const string ModuleKey = "module";
 		private const string VersionKey = "version";
+		private const string RequiredNWNVersionKey = "minnwnversion";
+		private const string TitleKey = "title";
 
 		// Arrays that define the supported component types.  Keys is an array of
 		// key values which match what is on the left of the ':' in the hif file.
@@ -221,13 +417,17 @@ namespace HakInstaller
 		private string[] Keys = new string[]
 		{ 
 			VersionKey,
+			RequiredNWNVersionKey,
 			ErfKey, 
+			TitleKey,
 			ModuleKey
 		};
 		private Type[] Types = new Type[]
 		{ 
 			typeof(StringCollection),
+			typeof(StringCollection),
 			typeof(StringCollection), 
+			typeof(StringCollection),
 			typeof(HakPropertyDictionary)
 		};
 

@@ -138,6 +138,36 @@ namespace NWN
 		}
 
 		/// <summary>
+		/// Gets the partial path (relative to the NWN install directory) of
+		/// the file, i.e. hak\foo.hak, etc.
+		/// </summary>
+		/// <param name="file">The NWM file to get the full path for.</param>
+		/// <returns>The partial path to the NWM file.</returns>
+		public static string GetPartialFilePath(string file)
+		{
+			// Determine the path based on the file's extension.  Hif files are
+			// a new file type (hack info) that we use to store information about
+			// what files are contained in a 'hak'.
+			FileInfo info = new FileInfo(file);
+			switch (info.Extension.ToLower())
+			{
+				case ".tlk":
+					return Path.Combine("tlk", file);
+				case ".erf":
+					return Path.Combine("erf", file);
+				case ".hif":
+				case ".hak":
+					return Path.Combine("hak", file);
+				case ".mod":
+					return Path.Combine("modules", file);
+				case ".nwm":
+					return Path.Combine("nwm", file);
+				default:
+					return file;
+			}
+		}
+
+		/// <summary>
 		/// This method gets the path that the specified NWN file should be
 		/// installed in.  It supports .mod, .nwm, .tlk, .erf, .hak file types.
 		/// </summary>

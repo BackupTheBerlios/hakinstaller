@@ -69,8 +69,44 @@ then you must use the -n<path> command line option to specify the install
 path of NWN.
 
 
+FOR CONTENT CREATORS
+====================
+
+While my utility was designed for the spell pak (now deceased) and PRC
+pack, anyone making player based haks can take advantage of the tool to
+install their content into modules.  All you need to do is write the
+HIF describing the content of your 'hak' and package that along with
+the installer (just give me credit for the installer) in your shipping
+file (zip, rar, whatever).
+
+To facilitate this, version 2.0 (and later) support running in single HIF
+mode; this is done by passing a HIF on the command line.  If this is done
+the list box of HIFs will not be shown, instead the application will reskin
+to just list modules and the title of the application will be your HIFs
+Title, or the file name if the HIF has no title.
+
+To make support easier the installer will validate all of the files described
+in your hif are present on disk, if for some reason they aren't then an
+error message will be displayed and the HIF will not be added to the list of
+HIFs (if in single HIF mode the application will just exit).
+
+You can also specify a minimum NWN version, and whether you require XP1 and
+XP2 installed, if the installed version of NWN does not meet the requirements
+you specify then the install will fail as above.
+
+
 VERSION HISTORY
 ===============
+
+2.0 - Added Title, Version, and MinNWNVersion keywords to the HIF scripts.
+Changes to support a single HIF skin if a HIF is passed on the command line,
+allowing content creators to use the installer as their dedicated "install"
+program to update modules.  Added HIF content checking, the installer now
+validates that all files described in the HIF are actually present on disk,
+displaying an error message (and not installing the HIF) if they are not.
+Added the ability of HIFs to specify a minimum required version of NWN, the
+HIF will not install if the user's version of NWN is less than the required
+version.
 
 1.41 - Recompiled for .NET Framework 1.1.  Fixed a bug adding heartbeat
 events.

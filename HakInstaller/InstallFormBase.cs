@@ -50,9 +50,23 @@ namespace HakInstaller
 			string[] haks = Directory.GetFiles(NWNInfo.GetPathForFile("foo.hif"), "*.hif");
 			foreach (string hak in haks)
 			{
-				// Trim the extension before adding.
-				FileInfo info = new FileInfo(hak);
-				checkedHaks.Items.Add(Path.GetFileNameWithoutExtension(info.Name));
+				// Load the HIF now and perform validation before adding it to the
+				// list of HIFs.
+				HakInfo hif = new HakInfo(hak);
+				string error;
+				if (hif.Validate(out error))
+					checkedHaks.Items.Add(hif);
+				else
+					MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			if (0 == checkedHaks.Items.Count)
+			{
+				MessageBox.Show(StringResources.GetString("NoHIFS"), "Error", MessageBoxButtons.OK,
+					MessageBoxIcon.Error);
+				Close();
+				Hide();
+				Application.Exit();
 			}
 		}
 
@@ -92,7 +106,7 @@ namespace HakInstaller
 		/// <param name="hifs">The list of hifs</param>
 		/// <param name="modules">The list of modules</param>
 		/// <returns>True if the user cancels the operation, false if they do not</returns>
-		protected bool CheckForHifConflicts(string[] hifs, string[] modules)
+		protected bool CheckForHifConflicts(HakInfo[] hifs, string[] modules)
 		{
 			// Get the list of conflicts if there aren't any then just return false.
 			HifConflictCollection conflicts = HakInstaller.CheckInstalledHifs(hifs, modules);
@@ -121,7 +135,7 @@ namespace HakInstaller
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		public void PerformInstall(string[] hifs, string[] modules)
+		public void PerformInstall(HakInfo[] hifs, string[] modules)
 		{
 			try
 			{
@@ -171,7 +185,7 @@ namespace HakInstaller
 			/// <summary>
 			/// Gets the list of haks to add.
 			/// </summary>
-			public string[] Hifs { get { return hifs; } }
+			public HakInfo[] Hifs { get { return hifs; } }
 
 			/// <summary>
 			/// Gets the list of modules to add haks to.
@@ -189,7 +203,7 @@ namespace HakInstaller
 			/// <param name="hifs">The list of haks to add</param>
 			/// <param name="modules">The list of modules to add haks to</param>
 			/// <param name="progress">The object used to show progress</param>
-			public InstallInfo(string[] hifs, string[]modules, 
+			public InstallInfo(HakInfo[] hifs, string[]modules, 
 				InstallProgressForm progress)
 			{
 				this.hifs = hifs;
@@ -200,7 +214,7 @@ namespace HakInstaller
 
 			#region private fields/properties/methods
 			private InstallProgressForm progress;
-			private string[] hifs;
+			private HakInfo[] hifs;
 			private string[] modules;
 			#endregion
 		}

@@ -92,7 +92,7 @@ namespace HakInstaller
 			this.checkedHaks.CheckOnClick = true;
 			this.checkedHaks.Location = new System.Drawing.Point(24, 96);
 			this.checkedHaks.Name = "checkedHaks";
-			this.checkedHaks.Size = new System.Drawing.Size(248, 154);
+			this.checkedHaks.Size = new System.Drawing.Size(248, 169);
 			this.checkedHaks.Sorted = true;
 			this.checkedHaks.TabIndex = 3;
 			this.checkedHaks.ThreeDCheckBoxes = true;
@@ -111,9 +111,9 @@ namespace HakInstaller
 			this.buttonInstall.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.buttonInstall.Enabled = false;
 			this.buttonInstall.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.buttonInstall.Location = new System.Drawing.Point(24, 264);
+			this.buttonInstall.Location = new System.Drawing.Point(24, 280);
 			this.buttonInstall.Name = "buttonInstall";
-			this.buttonInstall.Size = new System.Drawing.Size(96, 32);
+			this.buttonInstall.Size = new System.Drawing.Size(72, 24);
 			this.buttonInstall.TabIndex = 6;
 			this.buttonInstall.Text = "&Install";
 			this.buttonInstall.Click += new System.EventHandler(this.buttonInstall_Click);
@@ -123,9 +123,9 @@ namespace HakInstaller
 			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.buttonCancel.Location = new System.Drawing.Point(144, 264);
+			this.buttonCancel.Location = new System.Drawing.Point(112, 280);
 			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Size = new System.Drawing.Size(96, 32);
+			this.buttonCancel.Size = new System.Drawing.Size(72, 24);
 			this.buttonCancel.TabIndex = 7;
 			this.buttonCancel.Text = "&Close";
 			this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -138,7 +138,7 @@ namespace HakInstaller
 			this.checkedModules.CheckOnClick = true;
 			this.checkedModules.Location = new System.Drawing.Point(288, 96);
 			this.checkedModules.Name = "checkedModules";
-			this.checkedModules.Size = new System.Drawing.Size(248, 154);
+			this.checkedModules.Size = new System.Drawing.Size(248, 169);
 			this.checkedModules.Sorted = true;
 			this.checkedModules.TabIndex = 5;
 			this.checkedModules.ThreeDCheckBoxes = true;
@@ -166,7 +166,7 @@ namespace HakInstaller
 			this.AcceptButton = this.buttonInstall;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.buttonCancel;
-			this.ClientSize = new System.Drawing.Size(560, 318);
+			this.ClientSize = new System.Drawing.Size(560, 310);
 			this.Controls.Add(this.labelPath);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.checkedModules);
@@ -180,7 +180,7 @@ namespace HakInstaller
 			this.Name = "InstallForm";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "NWN Content Installer 1.41";
+			this.Text = "NWN Content Installer 2.0";
 			this.Load += new System.EventHandler(this.InstallForm_Load);
 			this.ResumeLayout(false);
 
@@ -257,9 +257,9 @@ namespace HakInstaller
 		private void buttonInstall_Click(object sender, System.EventArgs e)
 		{
 			// Build an array of the checked hif files.
-			string[] hifs = new string[checkedHaks.CheckedItems.Count];
+			HakInfo[] hifs = new HakInfo[checkedHaks.CheckedItems.Count];
 			for (int i = 0; i < checkedHaks.CheckedIndices.Count; i++)
-				hifs[i] = (string) checkedHaks.CheckedItems[i] + ".hif";
+				hifs[i] = (HakInfo) checkedHaks.CheckedItems[i];
 
 			// Count the total number of .mod/.nwm files selected.
 			int numModules = 0;

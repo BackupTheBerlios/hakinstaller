@@ -28,13 +28,19 @@ namespace HakInstaller
 			get
 			{
 				string name = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
-				return 0 == string.Compare("PRCInstaller", name, true);
+				return 0 == string.Compare("PRCModuleUpdater", name, true);
 			}
 		}
+
+		/// <summary>
+		/// Gets the single hif to use for the installer, or string.Empty if there is no single hif.
+		/// </summary>
+		public static string Hif { get { return IsPRCInstaller ? PRCHif.PRCHifFileName : hif; } }
 		#endregion
 
 		#region private static fields/properties/methods
 		private static bool installPathGiven = false;
+		private static string hif = string.Empty;
 
 		/// <summary>
 		/// Either displays the message in a message box or on the command line,
@@ -105,7 +111,15 @@ namespace HakInstaller
 					}
 				}
 				else
-					Terminate("Unknown command line argument {0}", arg);
+				{
+					// We can take one HIF on the command line, if this argument is a HIF and we
+					// don't have our single HIF yet then save it, otherwise it is an invalid
+					// command.
+					if (0 == string.Compare(".hif", Path.GetExtension(arg), true) && string.Empty == hif)
+						hif = arg;
+					else
+						Terminate("Unknown command line argument {0}", arg);
+				}
 			}
 		}
 
@@ -129,10 +143,15 @@ namespace HakInstaller
 				if (!installPathGiven && !NWNInfo.IsInstalled)
 					Terminate("Neverwinter Nights is not installed");
 
+				// If we are running as the PRC installer then create the hard coded HIF.
+				if (IsPRCInstaller) PRCHif.CreatePRCHif();
+
 				// Requires .NET framework 1.1
+				// If we are running as the PRC installer or a single HIF OEM reskin, then
+				// show our single HIF form, otherwise show the generic form.
 				Application.EnableVisualStyles();
-				if (IsPRCInstaller)
-					Application.Run(new PRCInstallForm());
+				if (IsPRCInstaller || string.Empty != hif)
+					Application.Run(new SingleHIFInstallForm());
 				else
 					Application.Run(new InstallForm());
 			}
@@ -149,6 +168,9 @@ namespace HakInstaller
 			{
 				// Turn off logging in case it was on this will flush the file.
 				NWNLogger.Logging = false;
+
+				// Delete the temporary PRC hif file if we are running as the PRC installer.
+				if (IsPRCInstaller) File.Delete(PRCHif.PRCHifFullPath);
 			}
 		}
 		#endregion

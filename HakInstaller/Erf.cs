@@ -140,7 +140,11 @@ namespace NWN.FileTypes.Tools
 		public static void Log(int level, string format, params object[] args)
 		{
 			// If we are logging and the message is important enough then log it.
-			if (null != stream && level >= minLevel) stream.WriteLine(format, args);
+			if (null != stream && level >= minLevel)
+			{
+				stream.WriteLine(format, args);
+				stream.Flush();
+			}
 		}
 		#endregion
 
@@ -170,11 +174,18 @@ namespace NWN.FileTypes.Tools
 		{
 			// Allocate a buffer to hold an object of the given type, and
 			// read the raw object data from the file.
+			NWNLogger.Log(0, "RawSerializer.Deserialize entering");
+			if (null == t) NWNLogger.Log(10, "t is null!!!");
+			if (null == stream) NWNLogger.Log(10, "stream is null!!!");
+			NWNLogger.Log(0, "RawSerializer.Deserialize({0}, {1})", t.Name, stream.GetType().Name);
 			int size = Marshal.SizeOf(t);
+			NWNLogger.Log(0, "RawSerializer.Deserialize sizeof(t) = {0}, allocing byte array", size);
 			byte[] buffer = new Byte[size];
+			NWNLogger.Log(0, "RawSerializer.Deserialize reading {0} bytes from stream", buffer.Length);
 			if (stream.Read(buffer, 0, buffer.Length) != buffer.Length) return null;
 
 			// Deserialize from the raw data.
+			NWNLogger.Log(0, "RawSerializer.Deserialize calling Deserialize overload");
 			return Deserialize(t, buffer);
 		}
 
@@ -189,18 +200,24 @@ namespace NWN.FileTypes.Tools
 		public static object Deserialize (Type t, byte[] buffer)
 		{
 			// Alloc a hglobal to store the bytes.
+			NWNLogger.Log(0, "RawSerializer.Deserialize Marshal.AllocHGlobal({0})", buffer.Length);
 			IntPtr ptr = Marshal.AllocHGlobal(buffer.Length);
 			try
 			{
 				// Copy the data to unprotected memory, then convert it to a STlkHeader
 				// structure
+				NWNLogger.Log(0, "RawSerializer.Deserialize calling Marshal.Copy()");
 				Marshal.Copy(buffer, 0, ptr, buffer.Length);
+				NWNLogger.Log(0, "RawSerializer.Deserialize calling Marshal.PtrToStructure()");
 				object o = Marshal.PtrToStructure(ptr, t);
+				NWNLogger.Log(0, "RawSerializer.Deserialize created object of type {0}", 
+					null == o ? "null" : o.GetType().Name);
 				return o;
 			}
 			finally
 			{
 				// Free the hglobal before exiting.
+				NWNLogger.Log(0, "RawSerializer.Deserialize calling Marshal.FreeHGlobal()");
 				Marshal.FreeHGlobal(ptr);
 			}
 		}
@@ -851,12 +868,12 @@ namespace NWN.FileTypes
 
 							// Generate the full path to the output file and create it.
 							string outFile = Path.Combine(path, keys[i].FileName);
-							NWNLogger.Log(1, "Erf.Decompress creating file {0}", outFile);
+							//NWNLogger.Log(1, "Erf.Decompress creating file {0}", outFile);
 							using (FileStream writer = new FileStream(outFile, FileMode.Create, 
 									   FileAccess.Write, FileShare.None))
 							{
 								// Read the file data from the ERF.
-								NWNLogger.Log(0, "Erf.Decompress reading file data from erf");
+								//NWNLogger.Log(0, "Erf.Decompress reading file data from erf");
 								byte[] buffer = new byte[resources[i].ResourceSize];
 								reader.Seek(resources[i].OffsetToResource, SeekOrigin.Begin);
 								if (buffer.Length != reader.Read(buffer, 0, buffer.Length))
@@ -911,6 +928,7 @@ namespace NWN.FileTypes
 		public static MemoryStream GetFile(string erf, string file)
 		{
 			// Open the erf file.
+			NWNLogger.Log(0, "Erf.GetFile({0}, {1}) entering", erf, file);
 			using (FileStream reader = 
 					   new FileStream(erf, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{

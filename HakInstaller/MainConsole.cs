@@ -54,8 +54,9 @@ namespace HakInstaller
 
 			// Convert the string collections to arrays and install the haks
 			// in the modules.
-			string[] hifs = new string[hifStrings.Count];
-			hifStrings.CopyTo(hifs, 0);
+			HakInfo[] hifs = new HakInfo[hifStrings.Count];
+			for (int i = 0; i < hifStrings.Count; i++)
+				hifs[i] = new HakInfo(hifStrings[i]);
 			string[] modules = new string[moduleStrings.Count];
 			moduleStrings.CopyTo(modules, 0);
 

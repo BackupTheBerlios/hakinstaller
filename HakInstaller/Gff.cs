@@ -498,6 +498,7 @@ namespace NWN.FileTypes.Gff
 			// returned object to an ErfHeader.
 			NWNLogger.Log(0, "GffHeader.GffHeader deserializing bytes"); 
 			object o = RawSerializer.Deserialize(typeof(GffHeader), s);
+			if (null == o) NWNLogger.Log(10, "RawSerializer.Deserialize returned null!!!");
 			if (null == o) throw new NWNException("Invalid Header in stream");
 			this = (GffHeader) o;
 			NWNLogger.Log(1, "GffHeader.GffHeader deserialized version {0}:{1}:{2}:{3}", 

@@ -36,11 +36,16 @@ namespace HakInstaller
 		/// this as its HIF instead of looking for HIF files.
 		/// </summary>
 		private const string HIF = 
+			"Title : PRC Pack\r\n" +
+			"Version : 2.0\r\n" +
+			"MinNWNVersion : 1.62, XP1, XP2\r\n" +
+
 			"# Erf for the MMM areas\r\n" +
 			"erf : prc_consortium.erf\r\n" +
 
 			"# Haks used by the prc pack.\r\n" +
 			"module.Hak : prc_2das.hak\r\n" +
+			"module.Hak : prc_craft2das.hak\r\n" +
 			"module.Hak : prc_scripts.hak\r\n" +
 			"module.Hak : prc_textures.hak\r\n" +
 			"module.Hak : prc_misc.hak\r\n" +

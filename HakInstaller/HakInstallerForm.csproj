@@ -221,20 +221,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "PRCInstallForm.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PRCInstallForm.resx"
-                    DependentUpon = "PRCInstallForm.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "readme.txt"
-                    BuildAction = "Content"
-                />
-                <File
                     RelPath = "ReplacingFilesForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -242,6 +228,16 @@
                 <File
                     RelPath = "ReplacingFilesForm.resx"
                     DependentUpon = "ReplacingFilesForm.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "SingleHIFInstallForm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SingleHIFInstallForm.resx"
+                    DependentUpon = "SingleHIFInstallForm.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
