@@ -121,6 +121,8 @@ can delete the files when they are finished with the module.
 VERSION HISTORY
 ===============
 
+2.0 Beta 2 - Various bug fixes, CEP HIF.
+
 2.0 - Added Title, Version, and MinNWNVersion keywords to the HIF scripts.
 Changes to support a single HIF skin if a HIF is passed on the command line,
 allowing content creators to use the installer as their dedicated "install"
