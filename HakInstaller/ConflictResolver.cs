@@ -392,6 +392,7 @@ namespace HakInstaller
 			// output 2da.
 			for (int i = 0; i < rows; i++)
 			{
+				StringCollection mergedRow = null;
 				_2DA useForOutput = null;
 				foreach (_2DA merge in merges)
 				{
@@ -430,21 +431,116 @@ namespace HakInstaller
 					if (_2DA.CompareRow(useForOutput, i, merge, i, true)) continue;
 
 					// We already have an output 2da, which means that 2 2da's have
-					// changed the same row, we cannot generate a merge.
-					return null;
+					// changed the same row, attempt to glue all of the merge changes
+					// together.  If we cannot generate a merged row then return null.
+					mergedRow = GenerateMergeRow(baseline, list, i);
+					if (null == mergedRow) return null;
+
+					// If we get here we have generated a merge row for all 2da's
+					// so we don't need to look at the data in this row any further
+					// break out of the loopo and use the mergedRow.
+					break;
 				}
 
 				// If we have merge 2da to copy from then copy the
 				// cell data.  If we don't have a merge 2da but the row is
 				// withing the baseline 2da then copy the baseline data. 
 				// Otherwise don't copy any data.
-				if (null != useForOutput)
+				if (null != mergedRow)
+					output.CopyRow(mergedRow, i);
+				else if (null != useForOutput)
 					output.CopyRow(useForOutput, i, i);
 				else if (i < baseline.Rows)
 					output.CopyRow(baseline, i, i);
 			}
 
 			return output;
+		}
+
+		/// <summary>
+		/// Attempts to generate a merge row by taking all of the alterations made
+		/// to the bioware row from the merge 2da's and incorporating them into 1
+		/// row.  This will work unless 2 different 2da's change the same column
+		/// in the row, which will make the merge fail.
+		/// </summary>
+		/// <param name="baseline">The bioware baseline 2da</param>
+		/// <param name="list">The list of 2da's being merged</param>
+		/// <param name="row">The row for which to generate a merge row</param>
+		/// <returns>The merged row, or null if a merge row could not be
+		/// generated.</returns>
+		private StringCollection GenerateMergeRow(_2DA baseline, ArrayList list, int row)
+		{
+			try
+			{
+				// We cannot merge if the row is not in the baseline.
+				if (row > baseline.Rows) return null;
+
+				// Create a copy of the merge row in the baseline 2da.
+				StringCollection resultRow = new StringCollection();
+				StringCollection baselineRow = baseline.GetRowData(row);
+				foreach (string s in baselineRow)
+					resultRow.Add(s);
+			
+				// Create a bool array to keep track of which columns
+				// we modify.
+				bool[] writtenTo = new bool[resultRow.Count];
+				for (int i = 0; i < writtenTo.Length; i++)
+					writtenTo[i] = false;
+
+				foreach (_2DA merge in list)
+				{
+					// Get the row from the merge 2da.
+					StringCollection mergeRow = merge.GetRowData(row);
+
+					// If the collections do not have the same length then
+					// fail the merge, the added column may not be at the end.
+					if (mergeRow.Count != resultRow.Count) return null;
+
+					// Loop through all of the columns.
+					for (int i = 1; i < resultRow.Count; i++)
+					{
+						// Ignore empty data cells in the merge row.
+						if (_2DA.Empty == mergeRow[i]) continue;
+
+						// Compare the cell value against the baseline.  If it is the
+						// same then ignore it. (the result row starts out as the baseline
+						// so we do not need to set these values, and we need to ignore
+						// them to detect double writes to the same cell)
+						if (_2DA.CompareCell(baselineRow[i], mergeRow[i], true))
+							continue;
+
+						// Compare the cells from the result row and the merge row,
+						// if they are different then we need to copy the merge
+						// row's value into the result row.  However, if a previous
+						// merge 2da has modified this column then we have 2 different
+						// 2da's wanting non-bioware default values in the same
+						// column, if that happens there is no way to merge.
+						if (!_2DA.CompareCell(mergeRow[i], resultRow[i], true))
+						{
+							// If we've already changed the bioware default for this
+							// column we cannot merge return null.
+							if (writtenTo[i])
+								return null;
+							else
+							{
+								// Overwrite the bioware default for this column and
+								// save the fact that we have changed this column
+								resultRow[i] = mergeRow[i];
+								writtenTo[i] = true;
+							}
+						}
+					}
+				}
+
+				// If we get here we were able to take all of the various 2da
+				// modifications to the bioware row and make 1 merge row with all
+				// of the changes, return it.
+				return resultRow;
+			}
+			catch (Exception)
+			{
+				return null;
+			}
 		}
 
 		/// <summary>
@@ -457,13 +553,15 @@ namespace HakInstaller
 		{
 			if (row >= file.Rows) return false;
 
-			int index = file.Schema.IndexOf("LABEL");
+			int index = file.GetIndex("LABEL");
+			if (-1 == index) index = file.GetIndex("NAME");
 			if (-1 == index) return false;
 
 			// Check for common labels indicating that it is a junk row.
 			string value = file[row, index].ToLower();
 			if (-1 != value.IndexOf("deleted") ||
-				-1 != value.IndexOf("reserved")) return true;
+				-1 != value.IndexOf("reserved") ||
+				-1 != value.IndexOf("user")) return true;
 			
 			return false;
 		}

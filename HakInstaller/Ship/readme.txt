@@ -121,6 +121,11 @@ can delete the files when they are finished with the module.
 VERSION HISTORY
 ===============
 
+2.2 - Enhanced the 2da merging logic.  The installer can now merge changes
+made by multiple haks to the same row as long as the row is a modified bioware
+row and no 2 haks change the same column with a different value.  Various
+bug fixes.
+
 2.0 - Various bug fixes.
 
 2.0 Beta 2 - Various bug fixes, CEP HIF.
@@ -140,6 +145,9 @@ to be used by the module.
 
 Added support for merging conflicting 2da files across all HIFs and creating
 a merge hak containing merged versions of the 2da's.
+
+2.4 - Synced version with module updater, fixed bug to make the installer work
+with 2da items with spaces in them.
 
 1.41 - Recompiled for .NET Framework 1.1.  Fixed a bug adding heartbeat
 events.

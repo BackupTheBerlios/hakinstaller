@@ -725,12 +725,14 @@ namespace NWN.FileTypes
 		/// <param name="fileName">The name of the file.</param>
 		public void SaveAs(string fileName)
 		{
+NWNLogger.Log(0, "module.SaveAs entering [{0}]", fileName);
 			// The ERF must be decompressed first unless it is a new ERF.
 			if (keys.Length > 0 && string.Empty == decompressedPath)
 				throw new NWNException("ERF must be decompressed to recreate");
 
 			// Copy all of the modified files into the temp directory
 			StringCollection replacedFiles = ReplacedFiles;
+NWNLogger.Log(0, "module.SaveAs copying {0} modified files into temp directory", replacedFiles.Count);
 			foreach (string file in replacedFiles)
 				File.Copy(file, Path.Combine(decompressedPath, 
 					Path.GetFileName(file)), true);
@@ -738,13 +740,15 @@ namespace NWN.FileTypes
 			// Figure out the new number of files in the ERF and create new
 			// key/resource arrays of the proper size.
 			int fileCount = keys.Length + addedFileHash.Count - removedFiles.Count;
+NWNLogger.Log(0, "module.SaveAs {0} total files, allocating key/resource arrays", fileCount);
 			ErfKey[] newKeys = new ErfKey[fileCount];
 			ErfResource[] newResources = new ErfResource[fileCount];
 
 			// Create a buffer to store the data.
+NWNLogger.Log(0, "module.SaveAs creating memory stream");
 			MemoryStream buffer = new MemoryStream();
 
-			// Copy all of the existin not-removed files into the new key/resource
+			// Copy all of the existing not-removed files into the new key/resource
 			// arrays.
 			int index = 0;
 			for (int i = 0; i < keys.Length; i++)
@@ -753,6 +757,7 @@ namespace NWN.FileTypes
 				if (string.Empty == file || removedFiles.Contains(file)) continue;
 
 				// Copy the key/resource pair over.
+NWNLogger.Log(1, "module.SaveAs copying file[{0}] '{1}'", i, file);
 				newKeys[index] = keys[i];
 				newResources[index] = resources[i];
 
@@ -767,6 +772,7 @@ namespace NWN.FileTypes
 			StringCollection addedFiles = AddedFiles;
 			foreach (string file in addedFiles)
 			{
+NWNLogger.Log(1, "module.SaveAs adding new file '{0}'", file);
 				newKeys[index] = new ErfKey(file);
 				newResources[index] = new ErfResource();
 
@@ -775,12 +781,14 @@ namespace NWN.FileTypes
 				index++;
 			}
 
-			// Figure out how big our descriptions are gonna be.
+			// Figure out how big our descriptions are going to be.
+NWNLogger.Log(0, "module.SaveAs calcing description size");
 			int descriptionsCount = 0;
 			for (int i = 0; i < descriptions.Length; i++)
 				descriptionsCount += descriptions[i].SizeInStream;
 
 			// Create a new resource header and calculate the new offsets.
+NWNLogger.Log(0, "module.SaveAs creating header");
 			ErfHeader newHeader = header;
 			newHeader.OffsetToLocalizedString = Marshal.SizeOf(typeof(ErfHeader));
 			newHeader.OffsetToKeyList = newHeader.OffsetToLocalizedString + descriptionsCount;
@@ -790,31 +798,42 @@ namespace NWN.FileTypes
 
 			// Calculate the offset to the beginning of the resource data and adjust
 			// the offsets in the resource array to take this into account.
+NWNLogger.Log(0, "module.SaveAs calcing offsets");
 			int offsetToData = newHeader.OffsetToResourceList +
 				(fileCount * Marshal.SizeOf(typeof(ErfResource)));
 			for (int i = 0; i < newResources.Length; i++)
 				newResources[i].OffsetToResource += offsetToData;
 
 			// Create the new file and write the data to it.
+NWNLogger.Log(0, "module.SaveAs creating output file");
 			string newName = fileName + ".New";
 			using (FileStream writer = new FileStream(newName, FileMode.Create, 
 					   FileAccess.Write, FileShare.Write))
 			{
+NWNLogger.Log(0, "module.SaveAs writing header");
 				newHeader.Serialize(writer);
+NWNLogger.Log(0, "module.SaveAs writing strings");
 				ErfString.Serialize(writer, descriptions);
+NWNLogger.Log(0, "module.SaveAs writing keys");
 				ErfKey.Serlialize(writer, newKeys);
+NWNLogger.Log(0, "module.SaveAs writing resources");
 				ErfResource.Serlialize(writer, newResources);
+NWNLogger.Log(0, "module.SaveAs writing raw data");
 				writer.Write(buffer.GetBuffer(), 0, (int) buffer.Length);
 
+NWNLogger.Log(0, "module.SaveAs flushing and closing");
 				writer.Flush();
 				writer.Close();
 			}
 
 			// Delete the old file and rename the new file to the proper name.
+NWNLogger.Log(0, "module.SaveAs copying over current file");
 			File.Copy(newName, fileName, true);
+NWNLogger.Log(0, "module.SaveAs deleting");
 			File.Delete(newName);
 
 			// Update the ERF's field's with the new values.
+NWNLogger.Log(0, "module.SaveAs updating object definition");
 			header = newHeader;
 			keys = newKeys;
 			resources = newResources;

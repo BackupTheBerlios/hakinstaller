@@ -203,6 +203,23 @@ namespace NWN.FileTypes
 		}
 
 		/// <summary>
+		/// Gets the index of a column given it's heading.
+		/// </summary>
+		/// <param name="headingText">The heading text</param>
+		/// <returns>The index of the column or -1 if it's not found</returns>
+		public int GetIndex(string headingText)
+		{
+			// Loop through the headings doing a case-insensetive compare of the
+			// passed heading text, if we find it return the index.
+			for (int i = 0; i < heading.Count; i++)
+				if (0 == string.Compare(headingText, heading[i], true, CultureInfo.InvariantCulture))
+					return i;
+
+			// We didn't find the heading return -1.
+			return -1;
+		}
+
+		/// <summary>
 		/// Tests to see if the specified row is empty.
 		/// </summary>
 		/// <param name="row">The row to test</param>
@@ -286,19 +303,31 @@ namespace NWN.FileTypes
 		/// <param name="row">The index of the row in this 2da</param>
 		public void CopyRow(_2DA source, int sourceRow, int row)
 		{
-			// Get the source and target StringCollections, and determine the
+			// Get the row from the source 2da and let our overload do all of the
+			// work.
+			StringCollection sourceRowData = (StringCollection) source.rows[sourceRow];
+			CopyRow(sourceRowData, row);
+		}
+
+		/// <summary>
+		/// Copies a row to this 2da.
+		/// </summary>
+		/// <param name="sourceRow"></param>
+		/// <param name="row"></param>
+		public void CopyRow(StringCollection sourceRow, int row)
+		{
+			// Get the target StringCollection, and determine the
 			// number of columns to copy being the minimum between the source
 			// 2da's column count and ours.
-			StringCollection sources = (StringCollection) source.rows[sourceRow];
 			StringCollection rowData = (StringCollection) rows[row];
-			int columns = System.Math.Min(sources.Count, heading.Count);
+			int columns = System.Math.Min(sourceRow.Count, heading.Count);
 
 			// Copy the row data, adjusting our column widths as necessary.
 			rowData[0] = row.ToString();
 			colSizes[0] = System.Math.Max(colSizes[0], rowData[0].Length);
 			for (int i = 1; i < columns; i++)
 			{
-				rowData[i] = sources[i];
+				rowData[i] = sourceRow[i];
 				colSizes[i] = System.Math.Max(colSizes[i], rowData[i].Length);
 			}
 		}
@@ -383,6 +412,19 @@ namespace NWN.FileTypes
 
 		#region public static methods
 		/// <summary>
+		/// Compares 2 2da cell values to see if they are the same or not.
+		/// </summary>
+		/// <param name="value1">The first value</param>
+		/// <param name="value2">The second value</param>
+		/// <param name="ignoreCase">True if the comparison should be case-insensitive</param>
+		/// <returns>True if the cells are the same, false if they are different</returns>
+		public static bool CompareCell(string value1, string value2, bool ignoreCase)
+		{
+			return 0 == string.Compare(value1, value2, ignoreCase, 
+				CultureInfo.InvariantCulture);
+		}
+
+		/// <summary>
 		/// Compares rows in 2 different 2da files to see if they are equal or not.
 		/// </summary>
 		/// <param name="twoDA1">The first 2da to test</param>
@@ -406,7 +448,7 @@ namespace NWN.FileTypes
 			// if we find any differences.  We start at column 1 to skip
 			// the row numbrs which would of course be different.
 			for (int i = 1; i < row1Data.Count; i++)
-				if (0 != string.Compare(row1Data[i], row2Data[i], ignoreCase, CultureInfo.InvariantCulture)) 
+				if (!CompareCell(row1Data[i], row2Data[i], ignoreCase))
 					return false;
 
 			// The rows are identical return true.
@@ -581,9 +623,13 @@ namespace NWN.FileTypes
 				// If this is not the first row add a space separator.
 				if (i > 0) b.Append(' ');
 
+				// If the string contains spaces then wrap it in quotes.
+				string value = s;
+				if (value.IndexOf(' ') >= 0) value = string.Format("\"{0}\"", value);
+
 				// Add the string data and any whitespace padding necessary.
-				b.Append(s);
-				if (s.Length < colSizes[i]) b.Append(' ', colSizes[i] - s.Length);
+				b.Append(value);
+				if (value.Length < colSizes[i]) b.Append(' ', colSizes[i] - value.Length);
 				i++;
 			}
 
@@ -640,8 +686,26 @@ namespace NWN.FileTypes
 					// to end the parse.
 					while (' ' == line[i] || '\t' == line[i]) i++;
 
+					// OK, hack time.  Some 2da's (itemprops.2da is the known case have 
+					// a "Label" column as the last column.  In this case the "label" 
+					// IGNORES the rules about quoting spaces and allows spaces in the name,
+					// we have to catch this case by checking the schema to see if we are
+					// on the last column and it is called "Label".
+					bool isLabelColumn = !headerLine &&
+						coll.Count == heading.Count - 1 && 
+						0 == string.Compare(heading[coll.Count], "LABEL", true, CultureInfo.InvariantCulture);
+
 					// items in a 2da are separated by whitespace, unless quoted.
-					if ('"' == line[i])
+					if (isLabelColumn)
+					{
+						// If we are reading the name column just grab the rest of the text to the
+						// end of the line and remove trailing whitespace.
+						string s = line.Substring(i);
+						s = s.Trim();
+						coll.Add(s);
+						i = line.Length;
+					}
+					else if ('"' == line[i])
 					{
 						// Find the end quote then add the substring.
 						int iEndQuote = line.IndexOf('"', i + 1);
@@ -714,7 +778,18 @@ namespace NWN.FileTypes
 				if (fHeader)
 					heading = strings;
 				else
+				{
+					// Do a reality check on the column count.
+					// Commented out until the CEP team fixes their fucked up 2da.
+					/*
+					if (strings.Count != Columns)
+						throw new InvalidOperationException(
+							string.Format("Row {0} in {1} does not have the correct number of columns",
+							rows.Count, Name));
+					*/
+
 					rows.Add(strings);
+				}
 			}
 		}
 		#endregion
