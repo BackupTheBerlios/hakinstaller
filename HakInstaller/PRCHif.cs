@@ -36,6 +36,9 @@ namespace HakInstaller
 		/// this as its HIF instead of looking for HIF files.
 		/// </summary>
 		private const string HIF = 
+			"# Erf for the MMM areas\r\n" +
+			"erf : prc_consortium.erf\r\n" +
+
 			"# Haks used by the prc pack.\r\n" +
 			"module.Hak : prc_2das.hak\r\n" +
 			"module.Hak : prc_scripts.hak\r\n" +
@@ -44,14 +47,6 @@ namespace HakInstaller
 
 			"# Custom tlk used by the prc pack.\r\n" +
 			"module.CustomTlk : prc_consortium.tlk\r\n" +
-
-			"# Add the Mordenkainen's Magnificent Mansion areas to the area list.\r\n" +
-			"module.Areas : mordmagman01\r\n" +
-			"module.Areas : mordmagman02\r\n" +
-			"module.Areas : mordmagman03\r\n" +
-			"module.Areas : mordmagman04\r\n" +
-			"module.Areas : mordmagman05\r\n" +
-			"module.Areas : mordmagman06\r\n" +
 
 			"# Events that need to be wired up.\r\n" +
 			"module.OnAcquireItem : prc_onaquire\r\n" +
