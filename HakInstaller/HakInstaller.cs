@@ -1310,7 +1310,8 @@ namespace HakInstaller
 				return originalScript.ToLower();
 
 			// Build the file name and full name of the script file.
-			string sourceName = "hif_" + property.Substring(0, 12) + ".nss";
+			string substring = property.Length > 12 ? property.Substring(0, 12) : property;
+			string sourceName = "hif_" + substring + ".nss";
 			string fullSourceName = Path.Combine(currentTempDir, sourceName);
 			System.Text.StringBuilder b = new System.Text.StringBuilder();
 

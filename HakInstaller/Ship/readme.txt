@@ -72,7 +72,8 @@ path of NWN.
 VERSION HISTORY
 ===============
 
-1.41 - Recompiled for .NET Framework 1.1.
+1.41 - Recompiled for .NET Framework 1.1.  Fixed a bug adding heartbeat
+events.
 
 1.4 - Added support for adding areas to modules in the HIF.  Added support
 for BMU music files in erfs/haks/modules.

@@ -54,11 +54,22 @@ namespace HakInstaller
 			"module.Areas : mordmagman06\r\n" +
 
 			"# Events that need to be wired up.\r\n" +
+			"module.OnAcquireItem : prc_onaquire\r\n" +
+			"module.OnActivateItem : prc_onactivate\r\n" +
 			"module.OnClientEnter : prc_onenter\r\n" +
-			"module.OnPlayerLevelUp : prc_levelup\r\n" +
+			"module.OnClientLeave : prc_onleave\r\n" +
+			"module.OnCutsceneAbort : prc_oncutabort\r\n" +
+			"module.OnHeartbeat : prc_onheartbeat\r\n" +
+			"module.OnModuleLoad : prc_onmodload\r\n" +
+			"module.OnPlayerDeath : prc_ondeath\r\n" +
+			"module.OnPlayerDying : prc_ondying\r\n" +
 			"module.OnPlayerEquipItem : prc_equip\r\n" +
-			"module.OnPlayerUnequipItem : prc_unequip\r\n" +
+			"module.OnPlayerLevelUp : prc_levelup\r\n" +
 			"module.OnPlayerRest : prc_rest\r\n" +
+			"module.OnPlayerRespawn : prc_onrespawn\r\n" +
+			"module.OnUnaquireItem : prc_onunaquire\r\n" +
+			"module.OnPlayerUnequipItem : prc_unequip\r\n" +
+			"module.OnUserDefined : prc_onuserdef\r\n" +
 
 			"# Cache PRC scripts for better performance.\r\n" +
 			"module.Cache : screen_targets\r\n" +
@@ -71,6 +82,13 @@ namespace HakInstaller
 			"module.Cache : add_damageshield\r\n" +
 			"module.Cache : add_randdamage\r\n" +
 			"module.Cache : add_healing\r\n" +
-			"module.Cache : add_hitpoints\r\n";
+			"module.Cache : add_hitpoints\r\n" +
+			"module.Cache : prc_onaquire\r\n" +
+			"module.Cache : prc_onactivate\r\n" +
+			"module.Cache : prc_equip\r\n" +
+			"module.Cache : prc_onheartbeat\r\n" +
+			"module.Cache : prc_onunaquire\r\n" +
+			"module.Cache : prc_onuserdef\r\n";
+
 	}
 }

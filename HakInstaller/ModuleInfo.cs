@@ -298,7 +298,7 @@ namespace NWN.FileTypes
 			properties.Add(new GffFieldSchema("onplayerrest", "Mod_OnPlrRest", GffFieldType.ResRef));
 			properties.Add(new GffFieldSchema("onplayerunequipitem", "Mod_OnPlrUnEqItm", GffFieldType.ResRef));
 			properties.Add(new GffFieldSchema("onplayerrespawn", "Mod_OnSpawnBtnDn", GffFieldType.ResRef));
-			properties.Add(new GffFieldSchema("onunaquireitem", "Mod_OnUnAcreItem", GffFieldType.ResRef));
+			properties.Add(new GffFieldSchema("onunaquireitem", "Mod_OnUnAqreItem", GffFieldType.ResRef));
 			properties.Add(new GffFieldSchema("onuserdefined", "Mod_OnUsrDefined", GffFieldType.ResRef));
 			properties.Add(new GffFieldSchema("customtlk", "Mod_CustomTlk", GffFieldType.ExoString));
 
