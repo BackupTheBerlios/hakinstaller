@@ -190,7 +190,7 @@ namespace HakInstaller
 			}
 			finally
 			{
-				if (Directory.Exists(conflictHakDir)) Directory.Delete(conflictHakDir);
+				if (Directory.Exists(conflictHakDir)) Directory.Delete(conflictHakDir, true);
 			}
 		}
 		#endregion
@@ -332,9 +332,7 @@ namespace HakInstaller
 				// Load the BioWare version of the the 2da to use as a baseline, if the
 				// file isn't in the bioware directory then we will have to make due w/o
 				// it just make a blank 2da with the correct schema.
-				string bioware2da = Path.Combine(Path.Combine(NWN.NWNInfo.InstallPath, "source"), conflict.File);
-				_2DA bioware = File.Exists(bioware2da) ? 
-					_2DA.Load2da(bioware2da) : new _2DA(((_2DA) list[0]).Schema);
+				_2DA bioware = LoadBioWare2da(conflict.File);
 
 				// At this point we have all relevent copies of the conflicting 2da loaded into
 				// memory, we now need to generate a merge 2da if possible.
@@ -351,6 +349,18 @@ namespace HakInstaller
 			{
 				return false;
 			}
+		}
+
+		/// <summary>
+		/// Loads a bioware 2da file.
+		/// </summary>
+		/// <param name="name">The name of the 2da to load</param>
+		/// <returns>A _2DA object representing the file.</returns>
+		private _2DA LoadBioWare2da(string name)
+		{
+			Stream stream = NWN.FileTypes.BIF.KeyCollection.GetFile(name);
+			_2DA bioware = _2DA.Load2da(stream);
+			return bioware;
 		}
 
 		/// <summary>
@@ -383,6 +393,11 @@ namespace HakInstaller
 				_2DA useForOutput = null;
 				foreach (_2DA merge in merges)
 				{
+					// Make an attempt to filter out junk rows with things
+					// such as "reserved", "deleted", etc in their labels.
+					// These often conflict but are really empty rows.
+					if (IsJunkRow(merge, i)) continue;
+
 					// If we have gone past the end of this 2da or the
 					// row is an empty row then ignore it.
 					if (i >= merge.Rows || merge.IsEmpty(i)) continue;
@@ -428,6 +443,27 @@ namespace HakInstaller
 			}
 
 			return output;
+		}
+
+		/// <summary>
+		/// Returns true if the row is a junk row.
+		/// </summary>
+		/// <param name="file">The 2da to test</param>
+		/// <param name="row">The row to test</param>
+		/// <returns>True if the row is a junk row.</returns>
+		private bool IsJunkRow(_2DA file, int row)
+		{
+			if (row >= file.Rows) return false;
+
+			int index = file.Schema.IndexOf("LABEL");
+			if (-1 == index) return false;
+
+			// Check for common labels indicating that it is a junk row.
+			string value = file[row, index].ToLower();
+			if (-1 != value.IndexOf("deleted") ||
+				-1 != value.IndexOf("reserved")) return true;
+			
+			return false;
 		}
 		#endregion
 	}

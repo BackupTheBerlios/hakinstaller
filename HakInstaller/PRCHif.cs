@@ -72,17 +72,10 @@ namespace HakInstaller
 			"module.OnUserDefined : prc_onuserdef\r\n" +
 
 			"# Cache PRC scripts for better performance.\r\n" +
-			"module.Cache : screen_targets\r\n" +
+			"module.Cache : prc_add_spl_pen\r\n" +
+			"module.Cache : prc_add_spell_dc\r\n" +
+			"module.Cache : prc_set_dmg_type\r\n" +
 			"module.Cache : prc_caster_level\r\n" +
-			"module.Cache : set_damage_type\r\n" +
-			"module.Cache : change_metamagic\r\n" +
-			"module.Cache : add_spell_dc\r\n" +
-			"module.Cache : add_spell_penetr\r\n" +
-			"module.Cache : add_damage\r\n" +
-			"module.Cache : add_damageshield\r\n" +
-			"module.Cache : add_randdamage\r\n" +
-			"module.Cache : add_healing\r\n" +
-			"module.Cache : add_hitpoints\r\n" +
 			"module.Cache : prc_onaquire\r\n" +
 			"module.Cache : prc_onactivate\r\n" +
 			"module.Cache : prc_equip\r\n" +

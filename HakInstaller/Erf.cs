@@ -174,18 +174,18 @@ namespace NWN.FileTypes.Tools
 		{
 			// Allocate a buffer to hold an object of the given type, and
 			// read the raw object data from the file.
-			NWNLogger.Log(0, "RawSerializer.Deserialize entering");
+			//NWNLogger.Log(0, "RawSerializer.Deserialize entering");
 			if (null == t) NWNLogger.Log(10, "t is null!!!");
 			if (null == stream) NWNLogger.Log(10, "stream is null!!!");
-			NWNLogger.Log(0, "RawSerializer.Deserialize({0}, {1})", t.Name, stream.GetType().Name);
+			//NWNLogger.Log(0, "RawSerializer.Deserialize({0}, {1})", t.Name, stream.GetType().Name);
 			int size = Marshal.SizeOf(t);
-			NWNLogger.Log(0, "RawSerializer.Deserialize sizeof(t) = {0}, allocing byte array", size);
+			//NWNLogger.Log(0, "RawSerializer.Deserialize sizeof(t) = {0}, allocing byte array", size);
 			byte[] buffer = new Byte[size];
-			NWNLogger.Log(0, "RawSerializer.Deserialize reading {0} bytes from stream", buffer.Length);
+			//NWNLogger.Log(0, "RawSerializer.Deserialize reading {0} bytes from stream", buffer.Length);
 			if (stream.Read(buffer, 0, buffer.Length) != buffer.Length) return null;
 
 			// Deserialize from the raw data.
-			NWNLogger.Log(0, "RawSerializer.Deserialize calling Deserialize overload");
+			//NWNLogger.Log(0, "RawSerializer.Deserialize calling Deserialize overload");
 			return Deserialize(t, buffer);
 		}
 
@@ -200,24 +200,24 @@ namespace NWN.FileTypes.Tools
 		public static object Deserialize (Type t, byte[] buffer)
 		{
 			// Alloc a hglobal to store the bytes.
-			NWNLogger.Log(0, "RawSerializer.Deserialize Marshal.AllocHGlobal({0})", buffer.Length);
+			//NWNLogger.Log(0, "RawSerializer.Deserialize Marshal.AllocHGlobal({0})", buffer.Length);
 			IntPtr ptr = Marshal.AllocHGlobal(buffer.Length);
 			try
 			{
 				// Copy the data to unprotected memory, then convert it to a STlkHeader
 				// structure
-				NWNLogger.Log(0, "RawSerializer.Deserialize calling Marshal.Copy()");
+				//NWNLogger.Log(0, "RawSerializer.Deserialize calling Marshal.Copy()");
 				Marshal.Copy(buffer, 0, ptr, buffer.Length);
-				NWNLogger.Log(0, "RawSerializer.Deserialize calling Marshal.PtrToStructure()");
+				//NWNLogger.Log(0, "RawSerializer.Deserialize calling Marshal.PtrToStructure()");
 				object o = Marshal.PtrToStructure(ptr, t);
-				NWNLogger.Log(0, "RawSerializer.Deserialize created object of type {0}", 
-					null == o ? "null" : o.GetType().Name);
+				//NWNLogger.Log(0, "RawSerializer.Deserialize created object of type {0}", 
+				//	null == o ? "null" : o.GetType().Name);
 				return o;
 			}
 			finally
 			{
 				// Free the hglobal before exiting.
-				NWNLogger.Log(0, "RawSerializer.Deserialize calling Marshal.FreeHGlobal()");
+				//NWNLogger.Log(0, "RawSerializer.Deserialize calling Marshal.FreeHGlobal()");
 				Marshal.FreeHGlobal(ptr);
 			}
 		}

@@ -232,7 +232,7 @@ namespace NWN.FileTypes
 		public bool IsEmpty(int index)
 		{
 			if (index >= header.stringCount || index < 0) throw new ArgumentOutOfRangeException();
-			return (int) ResRefFlags.None == resRefs[index].flags;
+			return (int) ResRefFlags.None == resRefs[index].flags || string.Empty == strings[index];
 		}
 
 		/// <summary>

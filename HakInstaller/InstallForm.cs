@@ -180,7 +180,7 @@ namespace HakInstaller
 			this.Name = "InstallForm";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "NWN Content Installer 2.0";
+			this.Text = "NWN Content Installer 2.0 Beta 1";
 			this.Load += new System.EventHandler(this.InstallForm_Load);
 			this.ResumeLayout(false);
 

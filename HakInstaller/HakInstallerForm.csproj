@@ -197,6 +197,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Key.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MainForm.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
