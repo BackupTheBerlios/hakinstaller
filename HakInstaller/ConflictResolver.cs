@@ -329,9 +329,12 @@ namespace HakInstaller
 					if (null != twoDA) list.Add(twoDA);
 				}
 
-				// Load the BioWare version of the the 2da to use as a baseline.
-				_2DA bioware = _2DA.Load2da(
-					Path.Combine(Path.Combine(NWN.NWNInfo.InstallPath, "source"), conflict.File));
+				// Load the BioWare version of the the 2da to use as a baseline, if the
+				// file isn't in the bioware directory then we will have to make due w/o
+				// it just make a blank 2da with the correct schema.
+				string bioware2da = Path.Combine(Path.Combine(NWN.NWNInfo.InstallPath, "source"), conflict.File);
+				_2DA bioware = File.Exists(bioware2da) ? 
+					_2DA.Load2da(bioware2da) : new _2DA(((_2DA) list[0]).Schema);
 
 				// At this point we have all relevent copies of the conflicting 2da loaded into
 				// memory, we now need to generate a merge 2da if possible.
