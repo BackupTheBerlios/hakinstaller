@@ -227,15 +227,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "prc_consortium.hif"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "PRCHif.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "ReplacingFilesForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"

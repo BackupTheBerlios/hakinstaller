@@ -33,8 +33,7 @@ namespace HakInstaller
 			string name = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
 			this.Text += name;
 
-			labelCaption.Text = StringResources.GetString(
-				MainForm.IsPRCInstaller ? "PRCInstallAbout" : "HakInstallAbout");
+			labelCaption.Text = StringResources.GetString("HakInstallAbout");
 
 			Icon icon = new Icon(typeof(AboutForm), "HakInstaller.ico");
 			icon = new Icon(icon, 32, 32);

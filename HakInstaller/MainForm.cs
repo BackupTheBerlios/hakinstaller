@@ -22,21 +22,9 @@ namespace HakInstaller
 	{
 		#region public static properties/methods
 		/// <summary>
-		/// Returns true if the application is running as the PRC installer.
-		/// </summary>
-		public static bool IsPRCInstaller
-		{
-			get
-			{
-				string name = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
-				return 0 == string.Compare("PRCModuleUpdater", name, true, CultureInfo.InvariantCulture);
-			}
-		}
-
-		/// <summary>
 		/// Gets the single hif to use for the installer, or string.Empty if there is no single hif.
 		/// </summary>
-		public static string Hif { get { return IsPRCInstaller ? PRCHif.PRCHifFileName : hif; } }
+		public static string Hif { get { return hif; } }
 		#endregion
 
 		#region private static fields/properties/methods
@@ -145,14 +133,11 @@ namespace HakInstaller
 				if (!installPathGiven && !NWNInfo.IsInstalled)
 					Terminate("Neverwinter Nights is not installed");
 
-				// If we are running as the PRC installer then create the hard coded HIF.
-				if (IsPRCInstaller) PRCHif.CreatePRCHif();
-
 				// Requires .NET framework 1.1
 				// If we are running as the PRC installer or a single HIF OEM reskin, then
 				// show our single HIF form, otherwise show the generic form.
 				Application.EnableVisualStyles();
-				if (IsPRCInstaller || string.Empty != hif)
+				if (string.Empty != hif)
 					Application.Run(new SingleHIFInstallForm());
 				else
 					Application.Run(new InstallForm());
@@ -170,9 +155,6 @@ namespace HakInstaller
 			{
 				// Turn off logging in case it was on this will flush the file.
 				NWNLogger.Logging = false;
-
-				// Delete the temporary PRC hif file if we are running as the PRC installer.
-				if (IsPRCInstaller) File.Delete(PRCHif.PRCHifFullPath);
 			}
 		}
 		#endregion

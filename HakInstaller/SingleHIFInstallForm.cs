@@ -36,7 +36,7 @@ namespace HakInstaller
 
 			// Save the HIF title as the title for our form.
 			Text = StringResources.GetString("SingleHIFTitle", hif.Title, 
-				0 == hif.Version ? "" : hif.VersionText);
+				hif.VersionText);
 		}
 
 		/// <summary>
