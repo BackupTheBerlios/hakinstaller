@@ -127,23 +127,23 @@ namespace HakInstaller
 			// 
 			// buttonContinue
 			// 
-			this.buttonContinue.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
+			this.buttonContinue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.buttonContinue.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.buttonContinue.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.buttonContinue.Location = new System.Drawing.Point(16, 160);
+			this.buttonContinue.Location = new System.Drawing.Point(16, 158);
 			this.buttonContinue.Name = "buttonContinue";
-			this.buttonContinue.Size = new System.Drawing.Size(96, 32);
+			this.buttonContinue.Size = new System.Drawing.Size(80, 24);
 			this.buttonContinue.TabIndex = 2;
 			this.buttonContinue.Text = "C&ontinue";
 			// 
 			// button2
 			// 
-			this.button2.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
+			this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.button2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.button2.Location = new System.Drawing.Point(128, 160);
+			this.button2.Location = new System.Drawing.Point(112, 158);
 			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(96, 32);
+			this.button2.Size = new System.Drawing.Size(80, 24);
 			this.button2.TabIndex = 3;
 			this.button2.Text = "&Cancel";
 			// 
@@ -158,13 +158,14 @@ namespace HakInstaller
 			// 
 			// listBox
 			// 
-			this.listBox.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.listBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
+				| System.Windows.Forms.AnchorStyles.Right)));
+			this.listBox.HorizontalScrollbar = true;
 			this.listBox.IntegralHeight = false;
 			this.listBox.Location = new System.Drawing.Point(16, 80);
 			this.listBox.Name = "listBox";
-			this.listBox.Size = new System.Drawing.Size(296, 72);
+			this.listBox.Size = new System.Drawing.Size(296, 70);
 			this.listBox.TabIndex = 1;
 			// 
 			// HifConflictsForm
@@ -172,12 +173,11 @@ namespace HakInstaller
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(328, 198);
 			this.ControlBox = false;
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																		  this.listBox,
-																		  this.pictureBox,
-																		  this.buttonContinue,
-																		  this.label1,
-																		  this.button2});
+			this.Controls.Add(this.listBox);
+			this.Controls.Add(this.pictureBox);
+			this.Controls.Add(this.buttonContinue);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.button2);
 			this.MinimumSize = new System.Drawing.Size(336, 232);
 			this.Name = "HifConflictsForm";
 			this.ShowInTaskbar = false;

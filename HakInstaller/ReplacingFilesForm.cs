@@ -151,23 +151,23 @@ namespace HakInstaller
 			// 
 			// buttonContinue
 			// 
-			this.buttonContinue.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
+			this.buttonContinue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.buttonContinue.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.buttonContinue.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.buttonContinue.Location = new System.Drawing.Point(16, 272);
+			this.buttonContinue.Location = new System.Drawing.Point(16, 278);
 			this.buttonContinue.Name = "buttonContinue";
-			this.buttonContinue.Size = new System.Drawing.Size(96, 32);
+			this.buttonContinue.Size = new System.Drawing.Size(96, 24);
 			this.buttonContinue.TabIndex = 4;
 			this.buttonContinue.Text = "C&ontinue";
 			// 
 			// button2
 			// 
-			this.button2.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
+			this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.button2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.button2.Location = new System.Drawing.Point(128, 272);
+			this.button2.Location = new System.Drawing.Point(128, 278);
 			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(96, 32);
+			this.button2.Size = new System.Drawing.Size(96, 24);
 			this.button2.TabIndex = 5;
 			this.button2.Text = "&Cancel";
 			// 
@@ -182,13 +182,13 @@ namespace HakInstaller
 			// 
 			// listBox
 			// 
-			this.listBox.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.listBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
+				| System.Windows.Forms.AnchorStyles.Right)));
 			this.listBox.ContextMenu = this.contextMenuView;
 			this.listBox.Location = new System.Drawing.Point(16, 80);
 			this.listBox.Name = "listBox";
-			this.listBox.Size = new System.Drawing.Size(296, 169);
+			this.listBox.Size = new System.Drawing.Size(296, 184);
 			this.listBox.Sorted = true;
 			this.listBox.TabIndex = 1;
 			this.listBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listBox_ItemCheck);
@@ -214,22 +214,22 @@ namespace HakInstaller
 			// 
 			// buttonSelectAll
 			// 
-			this.buttonSelectAll.Anchor = (System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right);
+			this.buttonSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.buttonSelectAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.buttonSelectAll.Location = new System.Drawing.Point(328, 88);
 			this.buttonSelectAll.Name = "buttonSelectAll";
-			this.buttonSelectAll.Size = new System.Drawing.Size(72, 32);
+			this.buttonSelectAll.Size = new System.Drawing.Size(72, 24);
 			this.buttonSelectAll.TabIndex = 2;
 			this.buttonSelectAll.Text = "&Select All";
 			this.buttonSelectAll.Click += new System.EventHandler(this.buttonSelectAll_Click);
 			// 
 			// buttonClearAll
 			// 
-			this.buttonClearAll.Anchor = (System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right);
+			this.buttonClearAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.buttonClearAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.buttonClearAll.Location = new System.Drawing.Point(328, 136);
+			this.buttonClearAll.Location = new System.Drawing.Point(328, 128);
 			this.buttonClearAll.Name = "buttonClearAll";
-			this.buttonClearAll.Size = new System.Drawing.Size(75, 32);
+			this.buttonClearAll.Size = new System.Drawing.Size(75, 24);
 			this.buttonClearAll.TabIndex = 3;
 			this.buttonClearAll.Text = "Clear &All";
 			this.buttonClearAll.Click += new System.EventHandler(this.buttonClearAll_Click);
@@ -239,14 +239,13 @@ namespace HakInstaller
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(416, 310);
 			this.ControlBox = false;
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																		  this.buttonClearAll,
-																		  this.buttonSelectAll,
-																		  this.listBox,
-																		  this.pictureBox,
-																		  this.buttonContinue,
-																		  this.label1,
-																		  this.button2});
+			this.Controls.Add(this.buttonClearAll);
+			this.Controls.Add(this.buttonSelectAll);
+			this.Controls.Add(this.listBox);
+			this.Controls.Add(this.pictureBox);
+			this.Controls.Add(this.buttonContinue);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.button2);
 			this.MinimumSize = new System.Drawing.Size(424, 344);
 			this.Name = "ReplacingFilesForm";
 			this.ShowInTaskbar = false;

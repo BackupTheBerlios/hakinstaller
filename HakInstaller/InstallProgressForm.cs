@@ -100,6 +100,24 @@ namespace HakInstaller
 			OverwriteWarningsForm form = new OverwriteWarningsForm(warnings, fatal, type);
 			return DialogResult.OK == form.ShowDialog((Form) this);
 		}
+
+		/// <summary>
+		/// Displays an error message to the user.
+		/// </summary>
+		/// <param name="error">The error message to display</param>
+		void IHakInstallProgress.DisplayErrorMessage(string error)
+		{
+			MessageBox.Show(this, error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+		}
+
+		/// <summary>
+		/// Displays a message to the user.
+		/// </summary>
+		/// <param name="error">The message to display</param>
+		void IHakInstallProgress.DisplayMessage(string message)
+		{
+			MessageBox.Show(this, message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
 		#endregion
 
 		#region protected fields/properties/methods
@@ -159,7 +177,7 @@ namespace HakInstaller
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.buttonCancel.Location = new System.Drawing.Point(16, 96);
 			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Size = new System.Drawing.Size(88, 32);
+			this.buttonCancel.Size = new System.Drawing.Size(72, 24);
 			this.buttonCancel.TabIndex = 2;
 			this.buttonCancel.Text = "&Cancel";
 			this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -167,12 +185,11 @@ namespace HakInstaller
 			// InstallProgressForm
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(378, 144);
+			this.ClientSize = new System.Drawing.Size(378, 136);
 			this.ControlBox = false;
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																		  this.buttonCancel,
-																		  this.labelMessage,
-																		  this.progressBar});
+			this.Controls.Add(this.buttonCancel);
+			this.Controls.Add(this.labelMessage);
+			this.Controls.Add(this.progressBar);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;

@@ -94,6 +94,19 @@ You can also specify a minimum NWN version, and whether you require XP1 and
 XP2 installed, if the installed version of NWN does not meet the requirements
 you specify then the install will fail as above.
 
+The tool supports tlk file merging between the module's tlk file (if it has
+one) and any tlk files contained in the HIF.  You may specify multiple tlk
+files in the hif, at run time the tool will attempt to build a single tlk file
+by merging all of the HIF tlk files with the module tlk file.  If this is
+successful then that tlk file will be used for the module, if it fails for any
+reason (most likely entries being used in duplicate tlk files) it will display
+an error message and abort adding the content to the module.  In order for the
+merge to succeed, none of the tlk files can have strings at the same location,
+for example if tlk1.tlk contains "foo" at entry 100 and "tlk2.tlk" contains
+"bar" at entry 100 then the merge will fail.  The lone exception to this is
+that multiple tlk files may have "Bad Strref" at location 0, it will ignore
+all of the duplicates in this case.
+
 
 VERSION HISTORY
 ===============
@@ -107,6 +120,9 @@ displaying an error message (and not installing the HIF) if they are not.
 Added the ability of HIFs to specify a minimum required version of NWN, the
 HIF will not install if the user's version of NWN is less than the required
 version.
+
+Added support for merging duplicate tlk files and creating a merge tlk file
+to be used by the module.
 
 1.41 - Recompiled for .NET Framework 1.1.  Fixed a bug adding heartbeat
 events.

@@ -127,8 +127,8 @@ namespace HakInstaller
 			this.button2 = new System.Windows.Forms.Button();
 			this.pictureBox = new System.Windows.Forms.PictureBox();
 			this.listView = new System.Windows.Forms.ListView();
-			this.columnFile = new System.Windows.Forms.ColumnHeader();
 			this.columnReplacer = new System.Windows.Forms.ColumnHeader();
+			this.columnFile = new System.Windows.Forms.ColumnHeader();
 			this.columnSource = new System.Windows.Forms.ColumnHeader();
 			this.SuspendLayout();
 			// 
@@ -143,23 +143,23 @@ namespace HakInstaller
 			// 
 			// buttonContinue
 			// 
-			this.buttonContinue.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
+			this.buttonContinue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.buttonContinue.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.buttonContinue.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.buttonContinue.Location = new System.Drawing.Point(16, 270);
+			this.buttonContinue.Location = new System.Drawing.Point(16, 296);
 			this.buttonContinue.Name = "buttonContinue";
-			this.buttonContinue.Size = new System.Drawing.Size(96, 32);
+			this.buttonContinue.Size = new System.Drawing.Size(80, 26);
 			this.buttonContinue.TabIndex = 2;
 			this.buttonContinue.Text = "C&ontinue";
 			// 
 			// button2
 			// 
-			this.button2.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
+			this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.button2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.button2.Location = new System.Drawing.Point(128, 270);
+			this.button2.Location = new System.Drawing.Point(112, 296);
 			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(96, 32);
+			this.button2.Size = new System.Drawing.Size(80, 26);
 			this.button2.TabIndex = 3;
 			this.button2.Text = "&Cancel";
 			// 
@@ -174,9 +174,9 @@ namespace HakInstaller
 			// 
 			// listView
 			// 
-			this.listView.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.listView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
+				| System.Windows.Forms.AnchorStyles.Right)));
 			this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
 																					   this.columnReplacer,
 																					   this.columnFile,
@@ -185,20 +185,20 @@ namespace HakInstaller
 			this.listView.Location = new System.Drawing.Point(16, 72);
 			this.listView.MultiSelect = false;
 			this.listView.Name = "listView";
-			this.listView.Size = new System.Drawing.Size(568, 190);
+			this.listView.Size = new System.Drawing.Size(568, 208);
 			this.listView.Sorting = System.Windows.Forms.SortOrder.Ascending;
 			this.listView.TabIndex = 4;
 			this.listView.View = System.Windows.Forms.View.Details;
-			// 
-			// columnFile
-			// 
-			this.columnFile.Text = "File";
-			this.columnFile.Width = 150;
 			// 
 			// columnReplacer
 			// 
 			this.columnReplacer.Text = "Overwriter";
 			this.columnReplacer.Width = 150;
+			// 
+			// columnFile
+			// 
+			this.columnFile.Text = "File";
+			this.columnFile.Width = 150;
 			// 
 			// columnSource
 			// 
@@ -210,12 +210,11 @@ namespace HakInstaller
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(600, 334);
 			this.ControlBox = false;
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																		  this.listView,
-																		  this.pictureBox,
-																		  this.buttonContinue,
-																		  this.labelPrompt,
-																		  this.button2});
+			this.Controls.Add(this.listView);
+			this.Controls.Add(this.pictureBox);
+			this.Controls.Add(this.buttonContinue);
+			this.Controls.Add(this.labelPrompt);
+			this.Controls.Add(this.button2);
 			this.MinimumSize = new System.Drawing.Size(608, 368);
 			this.Name = "OverwriteWarningsForm";
 			this.ShowInTaskbar = false;

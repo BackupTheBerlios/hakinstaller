@@ -109,6 +109,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ConflictResolver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Erf.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -264,6 +269,11 @@
                 <File
                     RelPath = "SystemMenu.cs"
                     SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tlk.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

@@ -61,7 +61,7 @@ namespace HakInstaller
 			System.Text.StringBuilder b = new System.Text.StringBuilder();
 			b.AppendFormat("'{0}' contains '{1}'{2}{3}", module, hif,
 				0 == installedVersion ? "" : " version ",
-				0 == installedVersion ? "" : installedVersion.ToString());
+				0 == installedVersion ? "" : installedVersion.ToString("0.00"));
 			return b.ToString();
 		}
 		#endregion
@@ -328,6 +328,18 @@ namespace HakInstaller
 		/// <returns>True if the operation should proceed</returns>
 		bool ShouldOverwrite(OverwriteWarningCollection warnings, bool fatal, 
 			OverwriteWarningType type);
+
+		/// <summary>
+		/// Displays an error message to the user.
+		/// </summary>
+		/// <param name="error">The error message to display</param>
+		void DisplayErrorMessage(string error);
+
+		/// <summary>
+		/// Displays a message to the user.
+		/// </summary>
+		/// <param name="error">The message to display</param>
+		void DisplayMessage(string message);
 		#endregion
 	}
 
@@ -565,7 +577,6 @@ namespace HakInstaller
 				{
 					if (proposedHifsColl.Contains(installedHifs[i].ToLower()))
 					{
-						// TODO: Need installed hif version.
 						HifConflict conflict = new HifConflict(module, 
 							installedHifs[i], installedVersions[i], 0);
 						if (null == conflicts) conflicts = new HifConflictCollection();
@@ -698,6 +709,10 @@ namespace HakInstaller
 		private void Module_CustomTlk(Erf module, object source, string property,
 			StringCollection values)
 		{
+			// If we have a merge tlk then do not set the custom tlk, the
+			// conflict resolution code for tlk's did that already.
+			if (string.Empty != mergeTlk) return;
+
 			string tlk = Path.GetFileNameWithoutExtension(values[0].ToLower());
 
 			// If the tlk is being set to the same tlk then do nothing.
@@ -816,6 +831,18 @@ namespace HakInstaller
 				return true;
 			}
 
+			/// <summary>
+			/// Displays an error message to the user.
+			/// </summary>
+			/// <param name="error">The error message to display</param>
+			void IHakInstallProgress.DisplayErrorMessage(string error) {}
+
+			/// <summary>
+			/// Displays a message to the user.
+			/// </summary>
+			/// <param name="error">The message to display</param>
+			void IHakInstallProgress.DisplayMessage(string message) {}
+
 			private int steps = 0;
 			#endregion
 		}
@@ -823,6 +850,8 @@ namespace HakInstaller
 
 		#region private fields/properties/methods
 		private string currentTempDir;
+		private string mergeTlk;
+		private string mergeHak;
 		private ObjectProperyHandlerDictionary objects;
 
 		/// <summary>
@@ -959,6 +988,28 @@ namespace HakInstaller
 		}
 
 		/// <summary>
+		/// Method to display a progress message.  It displays the message,
+		/// steps the progress bar, and checks to see if the operation has
+		/// been cancelled throwing a InstallCancelledException if it has.
+		/// </summary>
+		/// <param name="progress">The progress object</param>
+		/// <param name="step">If true steps the progress bar</param>
+		/// <param name="format">Message format string</param>
+		/// <param name="args">Message arguments</param>
+		private void Progress(IHakInstallProgress progress, bool step,
+			string format, params object[] args)
+		{
+			// If the operation has been cancelled then abort.
+			if (progress.IsCancelled) throw new InstallCancelledException();
+
+			// Display the message and step the progress bar.
+			progress.SetMessage(format, args);
+			if (step) progress.Step();
+		}
+		#endregion
+
+		#region private methods to deal with conflict resolution
+		/// <summary>
 		/// This method creates a conflict collection from the module.
 		/// </summary>
 		/// <param name="module"></param>
@@ -978,6 +1029,64 @@ namespace HakInstaller
 				conflicts.Add(conflict);
 			}
 			return conflicts;
+		}
+
+		/// <summary>
+		/// This function checks for tlk conflicts, checking to see if the module
+		/// and hifs have tlk files.  If there are multiple tlk files it will attempt
+		/// to generate a merge tlk file, if this cannot be done it will display an
+		/// error message and throw an InstallCancelledException to cancel the install.
+		/// </summary>
+		/// <param name="hakInfos">The hak infos being added to the module</param>
+		/// <param name="module">The module</param>
+		/// <param name="moduleInfo">The module info</param>
+		/// <param name="progress">The object implemening the progress interface</param>
+		private void CheckForTlkConflicts(HakInfo[] hakInfos,
+			Erf module, ModuleInfo moduleInfo,
+			IHakInstallProgress progress)
+		{
+			// Create a tlk string collection and add the module's tlk if it has one.
+			StringCollection tlks = new StringCollection();
+			if (string.Empty != moduleInfo.CustomTlk) 
+				tlks.Add(moduleInfo.CustomTlk.ToLower() + ".tlk");
+
+			// Add all of the tlk's from all of the HIFs.
+			foreach (HakInfo hif in hakInfos)
+			{
+				StringCollection hifTlks = hif.ModuleProperties["customtlk"];
+				if (null != hifTlks && hifTlks.Count > 0)
+				{
+					// Loop through the tlk's individually to exclude duplicates.
+					foreach (string hifTlk in hifTlks)
+					{
+						string lower = hifTlk.ToLower();
+						if (!tlks.Contains(lower)) tlks.Add(lower);
+					}
+				}
+			}
+
+			// If we have less than 2 tlks there is no conflict to resolve.
+			if (tlks.Count < 2) return;
+
+			// We have 2 or more tlk files, create a conflict resolver to
+			// build a merge tlk file.
+			ConflictResolver resolver = new ConflictResolver(progress);
+			string[] tlkStrings = new string[tlks.Count];
+			tlks.CopyTo(tlkStrings, 0);
+			mergeTlk = resolver.ResolveTlkConflict(module, tlkStrings);
+
+			// If we don't get a merge tlk back from the conflict resolver then we couldn't
+			// resolve the conflict.  This is a fatal error so display an error message and
+			// cancel the install.
+			if (string.Empty == mergeTlk)
+			{
+				progress.DisplayErrorMessage("The module and custom content contain tlk files " +
+					"that cannot be merged.  The module update will be aborted.");
+				throw new InstallCancelledException();
+			}
+
+			// Save the merge tlk as the module's custom tlk.
+			moduleInfo.CustomTlk = Path.GetFileNameWithoutExtension(mergeTlk.ToLower());
 		}
 
 		/// <summary>
@@ -1112,7 +1221,9 @@ namespace HakInstaller
 				!progress.ShouldOverwrite(erfWarnings, false, OverwriteWarningType.ModuleOverwritesHifs))
 				throw new InstallCancelledException();
 		}
+		#endregion
 
+		#region private methods to do the install work.
 		/// <summary>
 		/// Installs the listed haks (defined by hif files) on the module.
 		/// </summary>
@@ -1129,6 +1240,9 @@ namespace HakInstaller
 		private void DoInstall(HakInfo[] hakInfos, StringCollection decompressedErfs,
 			string moduleFile, IHakInstallProgress progress)
 		{
+			mergeHak = string.Empty;
+			mergeTlk = string.Empty;
+
 			StringCollection tempDirs = new StringCollection();
 			try
 			{
@@ -1143,6 +1257,10 @@ namespace HakInstaller
 
 				// Load the moduleInfo for the module.
 				ModuleInfo moduleInfo = new ModuleInfo(currentTempDir);
+
+				// Check for any tlk file conflicts and abort the install if they
+				// cannot be resolved.
+				CheckForTlkConflicts(hakInfos, module, moduleInfo, progress);
 
 				// Check for any file conflicts and make sure it is OK with the user.
 				Progress(progress, false, "Checking for overwrites");
@@ -1228,6 +1346,25 @@ namespace HakInstaller
 				// Recreate the module file with our changed files.
 				Progress(progress, true, "Saving {0}", moduleFile);
 				module.RecreateFile();
+
+				// If we created merge files then display a message to the user
+				// telling them what we did.
+				if (string.Empty != mergeHak || string.Empty != mergeTlk)
+				{
+					string files = "\r\n\r\n\t";
+					if (string.Empty != mergeHak) files += NWN.NWNInfo.GetPartialFilePath(mergeHak);
+					if (string.Empty != mergeTlk)
+					{
+						if (string.Empty != files) files += "\r\n\t";
+						files += NWN.NWNInfo.GetPartialFilePath(mergeTlk);
+					}
+
+					progress.DisplayMessage(string.Format(
+						"There were conflicts between the custom content you are trying to add and " +
+						"the files already used by the module '{0}'.  Merge files were created to resolve " +
+						"some of these conflicts, you should delete these files when you are finished " +
+						"with your module." + files, Path.GetFileNameWithoutExtension(module.FileName)));
+				}
 			}
 			catch (InstallCancelledException)
 			{
@@ -1286,7 +1423,9 @@ namespace HakInstaller
 				}
 			}
 		}
+		#endregion
 
+		#region private methods to generate merge scripts
 		/// <summary>
 		/// This method creates a script that calls ExecuteScript() to invoke
 		/// multiple scripts.  It is designed to allow multiple scripts to wire up
@@ -1421,26 +1560,6 @@ namespace HakInstaller
 
 			// Return the ResRef for the new script file.
 			return Path.GetFileNameWithoutExtension(sourceName).ToLower();
-		}
-
-		/// <summary>
-		/// Method to display a progress message.  It displays the message,
-		/// steps the progress bar, and checks to see if the operation has
-		/// been cancelled throwing a InstallCancelledException if it has.
-		/// </summary>
-		/// <param name="progress">The progress object</param>
-		/// <param name="step">If true steps the progress bar</param>
-		/// <param name="format">Message format string</param>
-		/// <param name="args">Message arguments</param>
-		private void Progress(IHakInstallProgress progress, bool step,
-			string format, params object[] args)
-		{
-			// If the operation has been cancelled then abort.
-			if (progress.IsCancelled) throw new InstallCancelledException();
-
-			// Display the message and step the progress bar.
-			progress.SetMessage(format, args);
-			if (step) progress.Step();
 		}
 		#endregion
 
