@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 using HakInstaller.Utilities;
@@ -95,7 +96,7 @@ namespace HakInstaller
 			this.buttonInstall.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.buttonInstall.Location = new System.Drawing.Point(24, 280);
 			this.buttonInstall.Name = "buttonInstall";
-			this.buttonInstall.Size = new System.Drawing.Size(96, 24);
+			this.buttonInstall.Size = new System.Drawing.Size(64, 24);
 			this.buttonInstall.TabIndex = 6;
 			this.buttonInstall.Text = "&Install";
 			this.buttonInstall.Click += new System.EventHandler(this.buttonInstall_Click);
@@ -105,9 +106,9 @@ namespace HakInstaller
 			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.buttonCancel.Location = new System.Drawing.Point(144, 280);
+			this.buttonCancel.Location = new System.Drawing.Point(104, 280);
 			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Size = new System.Drawing.Size(96, 24);
+			this.buttonCancel.Size = new System.Drawing.Size(64, 24);
 			this.buttonCancel.TabIndex = 7;
 			this.buttonCancel.Text = "&Close";
 			this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -177,7 +178,7 @@ namespace HakInstaller
 		private void ValidateHIF()
 		{
 			hif = new HakInfo(NWNInfo.GetFullFilePath(MainForm.Hif));
-			
+		
 			// Validate the PRC pack HIF, if validation fails then display
 			// the error message and exit the app.
 			string error;

@@ -38,7 +38,7 @@ namespace HakInstaller
 		private const string HIF = 
 			"Title : PRC Pack\r\n" +
 			"Version : 2.0\r\n" +
-			"MinNWNVersion : 1.62, XP2\r\n" +
+			"MinNWNVersion : 1.62, XP1, XP2\r\n" +
 
 			"# Erf for the MMM areas\r\n" +
 			"erf : prc_consortium.erf\r\n" +

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 using System.Reflection;
 using HakInstaller.Utilities;
 using NWN;
@@ -109,7 +110,7 @@ namespace HakInstaller
 							// data in the entry and we can still do the merge.  This
 							// is most likely to happen at index 0 where many tlk
 							// files place "Bad Strref".
-							if (0 == string.Compare(entry.Text, tlk[i].Text, true))
+							if (0 == string.Compare(entry.Text, tlk[i].Text, true, CultureInfo.InvariantCulture))
 								continue;
 
 							throw new InvalidOperationException();
@@ -227,7 +228,8 @@ namespace HakInstaller
 			// Use the first 12 characters of the module name as the base.  Tlk
 			// files can only have 16 character names max, and we want to save 4
 			// characters for the index.
-			string namePrefix = Path.GetFileNameWithoutExtension(module.FileName).Substring(0, 12);
+			string namePrefix = Path.GetFileNameWithoutExtension(module.FileName);
+			if (namePrefix.Length > 12) namePrefix = namePrefix.Substring(0, 12);
 			namePrefix = namePrefix.Replace(" ", "_");
 
 			for (int i = 1; i <= 9999; i ++)

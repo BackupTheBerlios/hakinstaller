@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using HakInstaller.Utilities;
 
 namespace HakInstaller
@@ -147,8 +148,8 @@ namespace HakInstaller
 					StringCollection required = GetStrings(RequiredNWNVersionKey, string.Empty);
 					foreach (string s in required)
 					{
-						if (0 == string.Compare("XP1", s, true) ||
-							0 == string.Compare("Undrentide", s, true))
+						if (0 == string.Compare("XP1", s, true, CultureInfo.InvariantCulture) ||
+							0 == string.Compare("Undrentide", s, true, CultureInfo.InvariantCulture))
 							return true;
 					}
 				}
@@ -172,8 +173,8 @@ namespace HakInstaller
 					StringCollection required = GetStrings(RequiredNWNVersionKey, string.Empty);
 					foreach (string s in required)
 					{
-						if (0 == string.Compare("XP2", s, true) ||
-							0 == string.Compare("Underdark", s, true))
+						if (0 == string.Compare("XP2", s, true, CultureInfo.InvariantCulture) ||
+							0 == string.Compare("Underdark", s, true, CultureInfo.InvariantCulture))
 							return true;
 					}
 				}
@@ -202,55 +203,66 @@ namespace HakInstaller
 		/// all live in the hak directory.</param>
 		public HakInfo(string fileName)
 		{
-			fileInfo = new FileInfo(fileName);
-
-			InitializeComponents();
-			using(StreamReader reader = new StreamReader(fileName))
+			// Force the thread to use the invariant culture to make the install
+			// code work on foreign language versions of windows.
+			CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			try
 			{
-				// Loop through all of the lines in the file.
-				for (int i = 1; reader.Peek() > -1; i++)
+				fileInfo = new FileInfo(fileName);
+
+				InitializeComponents();
+				using(StreamReader reader = new StreamReader(fileName))
 				{
-					// Read the references line and split off the 2da file name and the references.
-					string line = reader.ReadLine();
-					line = line.Trim();
-
-					// If the line is blank or begins with a '#' ignore it.
-					if (0 == line.Length || '#' == line[0]) continue;
-
-					// Split the line into the type and references.  If we don't get both
-					// parts the the line has a syntax error.
-					string[] strings = line.Split(':');
-					if (2 != strings.Length)
-						ThrowException("{0}: line {1}: syntax error", fileName, i.ToString());
-
-					// Save the component type and data.
-					string componentType = strings[0].Trim().ToLower();
-					string data = strings[1].Trim();
-
-					// Check to see if the component has a property.  If there is
-					// a '.' in the name then it has a sub type, we need to split
-					// the component type into the type and property.
-					string componentProperty = string.Empty;
-					if (-1 != componentType.IndexOf('.'))
+					// Loop through all of the lines in the file.
+					for (int i = 1; reader.Peek() > -1; i++)
 					{
-						strings = componentType.Split('.');
-						componentType = strings[0];
-						componentProperty = strings[1];
+						// Read the references line and split off the 2da file name and the references.
+						string line = reader.ReadLine();
+						line = line.Trim();
+
+						// If the line is blank or begins with a '#' ignore it.
+						if (0 == line.Length || '#' == line[0]) continue;
+
+						// Split the line into the type and references.  If we don't get both
+						// parts the the line has a syntax error.
+						string[] strings = line.Split(':');
+						if (2 != strings.Length)
+							ThrowException("{0}: line {1}: syntax error", fileName, i.ToString());
+
+						// Save the component type and data.
+						string componentType = strings[0].Trim().ToLower();
+						string data = strings[1].Trim();
+
+						// Check to see if the component has a property.  If there is
+						// a '.' in the name then it has a sub type, we need to split
+						// the component type into the type and property.
+						string componentProperty = string.Empty;
+						if (-1 != componentType.IndexOf('.'))
+						{
+							strings = componentType.Split('.');
+							componentType = strings[0];
+							componentProperty = strings[1];
+						}
+
+						// Split the various values, in case this can contain multiple
+						// values, and add each to the collection.
+						strings = data.Split(',');
+						StringCollection coll = GetStrings(componentType, componentProperty);
+						foreach (string s in strings)
+							coll.Add(s.Trim());
 					}
-
-					// Split the various values, in case this can contain multiple
-					// values, and add each to the collection.
-					strings = data.Split(',');
-					StringCollection coll = GetStrings(componentType, componentProperty);
-					foreach (string s in strings)
-						coll.Add(s.Trim());
 				}
-			}
 
-			// The hak may or may not have a version number in it, if it doesn't add 0 so
-			// we always have a version number for lookup.
-			StringCollection version = GetStrings(VersionKey, string.Empty);
-			if (0 == version.Count) version.Add("0");
+				// The hak may or may not have a version number in it, if it doesn't add 0 so
+				// we always have a version number for lookup.
+				StringCollection version = GetStrings(VersionKey, string.Empty);
+				if (0 == version.Count) version.Add("0");
+			}
+			finally
+			{
+				Thread.CurrentThread.CurrentCulture = currentCulture;
+			}
 		}
 
 		/// <summary>

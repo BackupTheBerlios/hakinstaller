@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 using HakInstaller.Utilities;
@@ -143,34 +144,11 @@ namespace HakInstaller
 				// continue.
 				if (CheckForHifConflicts(hifs, modules)) return;
 
-				// The OC/XP1/XP2 files can be marked as read only, so we have to undo that
-				// for all modules in the list.
-				foreach (string module in modules)
-				{
-					string file = NWNInfo.GetFullFilePath(module);
-					FileAttributes attrs = File.GetAttributes(file);
-					attrs &= ~FileAttributes.ReadOnly;
-					File.SetAttributes(file, attrs);
-				}
-
 				// Create a progress control, 
 				InstallProgressForm progress = new InstallProgressForm();
 				ThreadPool.QueueUserWorkItem(new WaitCallback(DoHakInstall),
 					new InstallInfo(hifs, modules, progress));
 				progress.ShowDialog(this);
-
-				// Reset any .nwm files back to read only to leave them as we found them,
-				// in case the engine wants them marked read only.
-				foreach (string module in modules)
-				{
-					if (0 == string.Compare(".nwm", Path.GetExtension(module), true))
-					{
-						string file = NWNInfo.GetFullFilePath(module);
-						FileAttributes attrs = File.GetAttributes(file);
-						attrs |= FileAttributes.ReadOnly;
-						File.SetAttributes(file, attrs);
-					}
-				}
 			}
 			finally
 			{
@@ -231,10 +209,24 @@ namespace HakInstaller
 		/// <param name="o">InstallInfo object containing the install data.</param>
 		protected void DoHakInstall(object o)
 		{
+			// Force the thread to use the invariant culture to make the install
+			// code work on foreign language versions of windows.
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
 			// Do the hak install and when we're done close the progress form.
 			InstallInfo info = (InstallInfo) o;
 			try
 			{
+				// The OC/XP1/XP2 files can be marked as read only, so we have to undo that
+				// for all modules in the list.
+				foreach (string module in info.Modules)
+				{
+					string file = NWNInfo.GetFullFilePath(module);
+					FileAttributes attrs = File.GetAttributes(file);
+					attrs &= ~FileAttributes.ReadOnly;
+					File.SetAttributes(file, attrs);
+				}
+
 				HakInstaller.InstallHaks(info.Hifs, info.Modules, info.Progress);
 			}
 			catch(Exception e)
@@ -245,6 +237,19 @@ namespace HakInstaller
 			finally
 			{
 				info.Progress.Close();
+
+				// Reset any .nwm files back to read only to leave them as we found them,
+				// in case the engine wants them marked read only.
+				foreach (string module in info.Modules)
+				{
+					if (0 == string.Compare(".nwm", Path.GetExtension(module), true, CultureInfo.InvariantCulture))
+					{
+						string file = NWNInfo.GetFullFilePath(module);
+						FileAttributes attrs = File.GetAttributes(file);
+						attrs |= FileAttributes.ReadOnly;
+						File.SetAttributes(file, attrs);
+					}
+				}
 			}
 		}
 		#endregion

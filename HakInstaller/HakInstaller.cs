@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 using System.Reflection;
+using System.Threading;
 using HakInstaller.Utilities;
 using NWN;
 using NWN.FileTypes;
@@ -596,38 +598,49 @@ namespace HakInstaller
 		/// conflicts</returns>
 		public static HifConflictCollection CheckInstalledHifs(HakInfo[] proposedHifs, string[] modules)
 		{
-			HifConflictCollection conflicts = null;
-			foreach (string module in modules)
+			// Force the thread to use the invariant culture to make the install
+			// code work on foreign language versions of windows.
+			CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			try
 			{
-				// Load the module info data and create an object for it.
-				MemoryStream stream = Erf.GetFile(NWNInfo.GetFullFilePath(module), ModuleInfo.FileName);
-				if (null == stream) NWN.FileTypes.Tools.NWNLogger.Log(10, "HakInstaller.CheckInstalledHifs, Erf.GetFile() returned null!!!");
-				ModuleInfo info = new ModuleInfo(stream);
-
-				// Load the installed hifs in module if any.
-				string[] installedHifs;
-				float[] installedVersions;
-				info.GetInstalledHakInfos(out installedHifs, out installedVersions);
-
-				// Create a StringCollection of the proposed hifs so we can use IndexOf(),
-				// then check to see if there are any hif conflicts, if there are then
-				// add them to the conflict list.
-				StringCollection proposedHifsColl = new StringCollection();
-				foreach (HakInfo hif in proposedHifs)
-					proposedHifsColl.Add(Path.GetFileNameWithoutExtension(hif.Name).ToLower());
-				for (int i = 0; i < installedHifs.Length; i++)
+				HifConflictCollection conflicts = null;
+				foreach (string module in modules)
 				{
-					if (proposedHifsColl.Contains(installedHifs[i].ToLower()))
+					// Load the module info data and create an object for it.
+					MemoryStream stream = Erf.GetFile(NWNInfo.GetFullFilePath(module), ModuleInfo.FileName);
+					if (null == stream) NWN.FileTypes.Tools.NWNLogger.Log(10, "HakInstaller.CheckInstalledHifs, Erf.GetFile() returned null!!!");
+					ModuleInfo info = new ModuleInfo(stream);
+
+					// Load the installed hifs in module if any.
+					string[] installedHifs;
+					float[] installedVersions;
+					info.GetInstalledHakInfos(out installedHifs, out installedVersions);
+
+					// Create a StringCollection of the proposed hifs so we can use IndexOf(),
+					// then check to see if there are any hif conflicts, if there are then
+					// add them to the conflict list.
+					StringCollection proposedHifsColl = new StringCollection();
+					foreach (HakInfo hif in proposedHifs)
+						proposedHifsColl.Add(Path.GetFileNameWithoutExtension(hif.Name).ToLower());
+					for (int i = 0; i < installedHifs.Length; i++)
 					{
-						HifConflict conflict = new HifConflict(module, 
-							installedHifs[i], installedVersions[i], 0);
-						if (null == conflicts) conflicts = new HifConflictCollection();
-						conflicts.Add(conflict);
+						if (proposedHifsColl.Contains(installedHifs[i].ToLower()))
+						{
+							HifConflict conflict = new HifConflict(module, 
+								installedHifs[i], installedVersions[i], 0);
+							if (null == conflicts) conflicts = new HifConflictCollection();
+							conflicts.Add(conflict);
+						}
 					}
 				}
-			}
 
-			return conflicts;
+				return conflicts;
+			}
+			finally
+			{
+				Thread.CurrentThread.CurrentCulture = currentCulture;
+			}
 		}
 
 		/// <summary>
@@ -641,11 +654,22 @@ namespace HakInstaller
 		public static void InstallHaks(HakInfo[] hifs, string[] modules,
 			IHakInstallProgress progress)
 		{
-			// If no progress was given then use a dummy one which does nothing.
-			if (null == progress) progress = new DummyProgress();
+			// Force the thread to use the invariant culture to make the install
+			// code work on foreign language versions of windows.
+			CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			try
+			{
+				// If no progress was given then use a dummy one which does nothing.
+				if (null == progress) progress = new DummyProgress();
 
-			// Invoke the private method on the singleton to do all the real work.
-			Singleton.DoInstall(hifs, modules, progress);
+				// Invoke the private method on the singleton to do all the real work.
+				Singleton.DoInstall(hifs, modules, progress);
+			}
+			finally
+			{
+				Thread.CurrentThread.CurrentCulture = currentCulture;
+			}
 		}
 
 		/// <summary>
@@ -658,11 +682,22 @@ namespace HakInstaller
 		public static void InstallHaks(HakInfo[] hifs, string moduleFile,
 			IHakInstallProgress progress)
 		{
-			// If no progress was given then use a dummy one which does nothing.
-			if (null == progress) progress = new DummyProgress();
+			// Force the thread to use the invariant culture to make the install
+			// code work on foreign language versions of windows.
+			CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			try
+			{
+				// If no progress was given then use a dummy one which does nothing.
+				if (null == progress) progress = new DummyProgress();
 
-			// Invoke the private method on the singleton to do all the real work.
-			Singleton.DoInstall(hifs, new string[] { moduleFile }, progress);
+				// Invoke the private method on the singleton to do all the real work.
+				Singleton.DoInstall(hifs, new string[] { moduleFile }, progress);
+			}
+			finally
+			{
+				Thread.CurrentThread.CurrentCulture = currentCulture;
+			}
 		}
 		#endregion
 
@@ -759,7 +794,7 @@ namespace HakInstaller
 
 			// If the tlk is being set to the same tlk then do nothing.
 			ModuleInfo moduleInfo = (ModuleInfo) source;
-			if (0 == string.Compare(moduleInfo.CustomTlk, tlk, true)) return;
+			if (0 == string.Compare(moduleInfo.CustomTlk, tlk, true, CultureInfo.InvariantCulture)) return;
 
 			// Check to see if the module already has a custom tlk file, if it does
 			// then we are dead; we cannot change it w/o breaking the module but the
@@ -1331,7 +1366,7 @@ namespace HakInstaller
 						module.AddFile(Path.Combine(erfDir, file), true);
 
 						// If the file is an area file then add it to the module's area list.
-						if (0 == string.Compare(".are", Path.GetExtension(file), true))
+						if (0 == string.Compare(".are", Path.GetExtension(file), true, CultureInfo.InvariantCulture))
 							moduleInfo.AddAreas(new string[] { Path.GetFileNameWithoutExtension(file) });
 					}
 				}
@@ -1510,7 +1545,7 @@ namespace HakInstaller
 			// If the original script and the otherScripts are the same then
 			// there is nothing to do, just return originalScript as the RefRef
 			if (1 == otherScripts.Count && 
-				0 == string.Compare(otherScripts[0], originalScript, true))
+				0 == string.Compare(otherScripts[0], originalScript, true, CultureInfo.InvariantCulture))
 				return originalScript.ToLower();
 
 			// Build the file name and full name of the script file.
@@ -1525,7 +1560,7 @@ namespace HakInstaller
 			// and add them to the list of scripts to call.
 			StringCollection scriptsToExecute = new StringCollection();
 			bool createScript = 
-				0 != string.Compare(originalScript, Path.GetFileNameWithoutExtension(sourceName), true);
+				0 != string.Compare(originalScript, Path.GetFileNameWithoutExtension(sourceName), true, CultureInfo.InvariantCulture);
 			if (!createScript)
 			{
 				// Read the list of scripts currently being executed from the hif_

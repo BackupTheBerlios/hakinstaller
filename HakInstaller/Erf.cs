@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
 using NWN.FileTypes.Tools;
@@ -935,26 +936,33 @@ namespace NWN.FileTypes
 			{
 				// Read the header from the ERF
 				ErfHeader header = new ErfHeader(reader);
+				NWNLogger.Log(0, "Erf.GetFile({0}, {1}) has {2} files", erf, file, header.EntryCount);
 
 				// Read the key (file) list from the ERF.
 				reader.Seek(header.OffsetToKeyList, SeekOrigin.Begin);
 				ErfKey[] keys = ErfKey.Deserialize(reader, header.EntryCount);
+				NWNLogger.Log(0, "Erf.GetFile({0}, {1}) read {2} keys", erf, file, keys.Length);
 
 				// Read the resource (file) list from the ERF.
 				reader.Seek(header.OffsetToResourceList, SeekOrigin.Begin);
 				ErfResource[] resources = ErfResource.Deserialize(reader, header.EntryCount);
+				NWNLogger.Log(0, "Erf.GetFile({0}, {1}) read {2} resources", erf, file, resources.Length);
 
 				// Loop through all of the resources in the erf looking for the file.
 				for (int i = 0; i < keys.Length; i++)
 				{
 					// Check to see if this is the file we're looking for.
-					if (0 == string.Compare(keys[i].FileName, file, true))
+					NWNLogger.Log(1, "Erf.GetFile('{0}', '{1}'), keys[{2}].FileName '{3}'", erf, file, i, keys[i].FileName);
+					//if (keys[i].FileName.ToLower() == file.ToLower())
+					if (0 == string.Compare(keys[i].FileName, file, true, CultureInfo.InvariantCulture))
 					{
+						NWNLogger.Log(1, "Erf.GetFile('{0}', '{1}'), match!", erf, file);
 						// We found our file, create a MemoryStream large enough to hold the file's
 						// data and load the data into the stream.
 						byte[] buffer = new Byte[resources[i].ResourceSize];
 						reader.Seek(resources[i].OffsetToResource, SeekOrigin.Begin);
 						reader.Read(buffer, 0, resources[i].ResourceSize);
+						NWNLogger.Log(1, "Erf.GetFile('{0}', '{1}'), creating MemoryStream from {2} bytes!", erf, file, buffer.Length);
 						return new MemoryStream(buffer, false);
 					}
 				}

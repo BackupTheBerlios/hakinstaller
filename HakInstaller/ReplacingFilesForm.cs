@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using HakInstaller;
@@ -330,7 +331,7 @@ namespace HakInstaller
 
 			// Menu picks are only enabled if a script source ".NSS" file is selected.
 			bool enabled = index >= 0 && 
-				0 == string.Compare(Path.GetExtension(conflict.FileName), ".nss", true);
+				0 == string.Compare(Path.GetExtension(conflict.FileName), ".nss", true, CultureInfo.InvariantCulture);
 
 			menuItemViewHakFile.Enabled = enabled;
 			menuItemViewModFile.Enabled = enabled;

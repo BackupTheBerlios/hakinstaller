@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -223,7 +224,7 @@ namespace NWN.FileTypes
 					// message to someone trying to mod the 2da.  If a row has data
 					// in the label column but no other then we want to consider the
 					// row empty as it has no meaningful content.
-					if (0 == string.Compare("label", heading[i], true)) continue;
+					if (0 == string.Compare("label", heading[i], true, CultureInfo.InvariantCulture)) continue;
 
 					return false;
 				}
@@ -405,7 +406,8 @@ namespace NWN.FileTypes
 			// if we find any differences.  We start at column 1 to skip
 			// the row numbrs which would of course be different.
 			for (int i = 1; i < row1Data.Count; i++)
-				if (0 != string.Compare(row1Data[i], row2Data[i], ignoreCase)) return false;
+				if (0 != string.Compare(row1Data[i], row2Data[i], ignoreCase, CultureInfo.InvariantCulture)) 
+					return false;
 
 			// The rows are identical return true.
 			return true;

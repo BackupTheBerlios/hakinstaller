@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
@@ -28,7 +29,7 @@ namespace HakInstaller
 			get
 			{
 				string name = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
-				return 0 == string.Compare("PRCModuleUpdater", name, true);
+				return 0 == string.Compare("PRCModuleUpdater", name, true, CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -115,7 +116,8 @@ namespace HakInstaller
 					// We can take one HIF on the command line, if this argument is a HIF and we
 					// don't have our single HIF yet then save it, otherwise it is an invalid
 					// command.
-					if (0 == string.Compare(".hif", Path.GetExtension(arg), true) && string.Empty == hif)
+					if (0 == string.Compare(".hif", Path.GetExtension(arg), true, CultureInfo.InvariantCulture) && 
+						string.Empty == hif)
 						hif = arg;
 					else
 						Terminate("Unknown command line argument {0}", arg);

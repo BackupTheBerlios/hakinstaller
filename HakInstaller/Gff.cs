@@ -2777,7 +2777,7 @@ namespace NWN.FileTypes.Gff
 			if (null == field)
 			{
 				field = schema.CreateField();
-				TopLevel.Add(schema.Tag, field);
+				dict.Add(schema.Tag, field);
 			}
 
 			return field;
