@@ -1,14 +1,16 @@
-Microsoft Visual Studio Solution File, Format Version 7.00
+Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HakInstallerForm", "HakInstallerForm.csproj", "{09E68C4C-1EAD-406F-9C8C-27B3D52F5BE9}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HakInstallerConsole", "HakInstallerConsole.csproj", "{C2B4588A-3CE9-4F86-BF3C-1D371C20D7A9}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
-		ConfigName.0 = Debug
-		ConfigName.1 = Release
-	EndGlobalSection
-	GlobalSection(ProjectDependencies) = postSolution
+		Debug = Debug
+		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{09E68C4C-1EAD-406F-9C8C-27B3D52F5BE9}.Debug.ActiveCfg = Debug|.NET

@@ -130,7 +130,7 @@ namespace HakInstaller
 					Terminate("Neverwinter Nights is not installed");
 
 				// Requires .NET framework 1.1
-				//Application.EnableVisualStyles();
+				Application.EnableVisualStyles();
 				if (IsPRCInstaller)
 					Application.Run(new PRCInstallForm());
 				else

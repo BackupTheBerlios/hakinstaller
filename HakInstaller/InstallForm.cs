@@ -87,8 +87,8 @@ namespace HakInstaller
 			// 
 			// checkedHaks
 			// 
-			this.checkedHaks.Anchor = ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-				| System.Windows.Forms.AnchorStyles.Left);
+			this.checkedHaks.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+				| System.Windows.Forms.AnchorStyles.Left)));
 			this.checkedHaks.CheckOnClick = true;
 			this.checkedHaks.Location = new System.Drawing.Point(24, 96);
 			this.checkedHaks.Name = "checkedHaks";
@@ -108,7 +108,7 @@ namespace HakInstaller
 			// 
 			// buttonInstall
 			// 
-			this.buttonInstall.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
+			this.buttonInstall.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.buttonInstall.Enabled = false;
 			this.buttonInstall.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.buttonInstall.Location = new System.Drawing.Point(24, 264);
@@ -120,7 +120,7 @@ namespace HakInstaller
 			// 
 			// buttonCancel
 			// 
-			this.buttonCancel.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
+			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.buttonCancel.Location = new System.Drawing.Point(144, 264);
@@ -132,9 +132,9 @@ namespace HakInstaller
 			// 
 			// checkedModules
 			// 
-			this.checkedModules.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.checkedModules.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
+				| System.Windows.Forms.AnchorStyles.Right)));
 			this.checkedModules.CheckOnClick = true;
 			this.checkedModules.Location = new System.Drawing.Point(288, 96);
 			this.checkedModules.Name = "checkedModules";
@@ -154,8 +154,8 @@ namespace HakInstaller
 			// 
 			// labelPath
 			// 
-			this.labelPath.Anchor = ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
+			this.labelPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+				| System.Windows.Forms.AnchorStyles.Right)));
 			this.labelPath.Location = new System.Drawing.Point(24, 32);
 			this.labelPath.Name = "labelPath";
 			this.labelPath.Size = new System.Drawing.Size(504, 16);
@@ -167,21 +167,20 @@ namespace HakInstaller
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.buttonCancel;
 			this.ClientSize = new System.Drawing.Size(560, 318);
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																		  this.labelPath,
-																		  this.label2,
-																		  this.checkedModules,
-																		  this.buttonInstall,
-																		  this.label1,
-																		  this.checkedHaks,
-																		  this.labelVersion,
-																		  this.buttonCancel});
+			this.Controls.Add(this.labelPath);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.checkedModules);
+			this.Controls.Add(this.buttonInstall);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.checkedHaks);
+			this.Controls.Add(this.labelVersion);
+			this.Controls.Add(this.buttonCancel);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MinimumSize = new System.Drawing.Size(568, 328);
 			this.Name = "InstallForm";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "NWN Content Installer 1.4";
+			this.Text = "NWN Content Installer 1.41";
 			this.Load += new System.EventHandler(this.InstallForm_Load);
 			this.ResumeLayout(false);
 
